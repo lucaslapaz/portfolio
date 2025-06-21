@@ -1,0 +1,1 @@
+> Os arquivos nessa pastas serão usados para realizar testes durante o desenvolvimento, diminuindo a poluição no arquivo do código. Devido a modularização e o uso de injeção de dependência, é possível importar classes e funções e testá-las individualmente.

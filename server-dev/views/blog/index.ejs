@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog</title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="icon" type="image/png" href="/icons/letra-l.png">
+
+    <style>
+
+
+    </style>
+
+</head>
+
+<body>
+
+    <%- include('../partials/header.ejs') %>
+
+        <main class="main">
+            <div class="main-wrapper wrapper">
+                <section class="blog-section">
+                    <h1 class="blog-section__title">BLOG / POSTS</h1>
+
+                    <p class="blog-section__description">
+                        Aqui vou compartilhar coisas que aprendi, comentar sobre temas que me interessam e postar
+                        tutoriais para ajudar quem também está estudando ou desenvolvendo projetos.
+                    </p>
+
+                    <div class="blog-section__posts">
+                        
+                        
+                        <% if (listedPosts && listedPosts.length > 0) { 
+                            
+                            for(let post of listedPosts){%>
+                                <article class="post-card">
+                                    <h3 class="post-card__title"><%= post.title %></h3>
+                                    <p class="post-card__author"><%= post.name %></p>
+                                    <p class="post-card__description"><%- post.description %></p>
+                                    <a href="/post/<%- post.formatted_title %>" class="post-card__button">Acessar post</a>
+                                </article>
+                            <% }
+                         } %>
+                        
+                        
+                        <article class="post-card">
+                            <h3 class="post-card__title">Esse Post Não Existe</h3>
+                            <p class="post-card__author">Lucas Lapaz</p>
+                            <p class="post-card__description">Card usado para testar a página Not Found.</p>
+                            <a href="/post/post-nao-existe" class="post-card__button">Acessar post</a>
+                        </article>
+
+                        <!-- <article class="post-card">
+                            <h3 class="post-card__title">Título do post 2</h3>
+                            <p class="post-card__author">lucaslapaz</p>
+                            <p class="post-card__description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                Curabitur commodo erat nec metus suscipit.</p>
+                            <a href="/post/code-highlight-test" class="post-card__button">Acessar post</a>
+                        </article>
+
+                        <article class="post-card">
+                            <h3 class="post-card__title">Título do post 3</h3>
+                            <p class="post-card__author">lucaslapaz</p>
+                            <p class="post-card__description">Sed do eiusmod tempor incididunt ut labore et dolore magna
+                                aliqua. Ut enim ad minim veniam.</p>
+                            <a href="/post/what-is-lorem-ipsum" class="post-card__button">Acessar post</a>
+                        </article>
+
+                        <article class="post-card">
+                            <h3 class="post-card__title">Título do post 4</h3>
+                            <p class="post-card__author">lucaslapaz</p>
+                            <p class="post-card__description">Quis nostrud exercitation ullamco laboris nisi ut aliquip
+                                ex ea commodo consequat.</p>
+                            <a href="/post/como-aprendi-a-programar-desmontando-jogos-em-flash" class="post-card__button">Acessar post</a>
+                        </article>
+
+                        <article class="post-card">
+                            <h3 class="post-card__title">Título do post 5</h3>
+                            <p class="post-card__author">lucaslapaz</p>
+                            <p class="post-card__description">Duis aute irure dolor in reprehenderit in voluptate velit
+                                esse cillum dolore eu fugiat nulla pariatur.</p>
+                            <a href="/post/5" class="post-card__button">Acessar post</a>
+                        </article> -->
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <%- include('../partials/footer.ejs') %>
+
+            <script src="/assets/script.js"></script>
+</body>
+
+</html>

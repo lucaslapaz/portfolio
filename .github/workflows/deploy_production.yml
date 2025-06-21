@@ -1,0 +1,73 @@
+name: Deploy to PRODUCTION
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production # environment do github
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Build do projeto
+        run: npm run build
+
+      - name: Criar .env localmente
+        run: |
+          echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" > .env
+          echo "MYSQL_PORT=${{ secrets.MYSQL_PORT }}" >> .env
+          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
+          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+          echo "DATABASE=${{ secrets.DATABASE }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "JWT_EXPIRES_IN=${{ vars.JWT_EXPIRES_IN }}" >> .env
+          echo "COOKIE_EXPIRES_IN=${{ vars.COOKIE_EXPIRES_IN }}" >> .env
+
+      - name: Enviar arquivos para VPS via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          port: 22
+          source: "."
+          target: "~/portfolio-production/"
+          rm: false
+          exclude: "node_modules"
+
+      - name: Executar comandos na VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd ~/portfolio-production/
+            
+            # Parar o processo anterior (se estiver rodando na porta 3000, por exemplo)
+            PID=$(lsof -t -i:3000) && if [ -n "$PID" ]; then kill -9 $PID; fi
+
+            # Criar banco de dados se não existir
+            mysql -u "${{ secrets.MYSQL_USER }}" -p"${{ secrets.MYSQL_PASSWORD }}" < ./schemas/create_production_db.sql
+
+            # Instalar dependências para produção
+            npm install --production
+
+            npx knex migrate:latest
+
+            # Executar em segundo plano
+            nohup npm run prod > output_production.log 2>&1 &

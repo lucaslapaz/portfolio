@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="icon" type="image/png" href="/icons/letra-l.png">
+</head>
+
+<body>
+
+    <%- include('../partials/header.ejs') %>
+
+    <main class="main">
+        <div class="main-wrapper wrapper">
+            <section class="login-section">
+                <h1 class="login-section__title">LOGIN</h1>
+                <input type="input" class="login-section__username">
+                <input type="password" class="login-section__password">
+                <button type="button" class="login-section__submit">Entrar</button>
+            </section>
+        </div>
+    </main>
+
+    <%- include('../partials/footer.ejs') %>
+
+    <script src="/assets/script.js"></script>
+    <script>
+        const usernameInput = document.querySelector(".login-section__username");
+        const passwordInput = document.querySelector(".login-section__password");
+        const submitButton = document.querySelector(".login-section__submit");
+
+        submitButton.addEventListener("click", async (e) => {
+
+            let username = usernameInput.value.trim();
+            let password = passwordInput.value;
+
+            if(password.length < 5 || username.length < 5){
+                const msg = "O usuário ou a senha possuem no mínimo 5 caracteres cada.";
+                window.alert(msg);
+                return;
+            }
+
+            try{
+                e.target.disabled = true;
+
+                let request = await fetch("/login", {
+                    method: 'POST',
+                    credentials:"include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({username, password})
+                })
+
+                if(!request.ok){
+                    throw new Error("O servidor retornou erro como resposta à tentativa de login.");
+                }
+                
+                const response = await request.json();
+                console.log(response.message);
+                window.location.href = "/home";
+
+            }catch(err){
+                console.log("Aconteceu um erro: " + err.message);
+            }
+            e.target.disabled = false;
+        })
+
+    </script>
+</body>
+
+</html>

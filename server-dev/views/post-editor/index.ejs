@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editando: <%= title || 'New'%></title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/assets/prism.css">
+    <link rel="icon" type="image/png" href="/icons/letra-l.png">
+</head>
+
+<body>
+
+    <main class="main">
+        <div class="editor-wrapper">
+            <section class="post-section">
+                <h1 class="post-section__title"><%= title || ''%></h1>
+                <div class="post-section__info">
+                    <span class="post-section__info-author"><%= author || '' %></span>
+                    <span class="post-section__info-date"><%= creation_date || '' %></span>
+                </div>
+                <div class="post-section__content"><%- content || '' %></div>
+            </section>
+            <section class="editor-section">
+                <h1>Título:</h1>
+                <input class="editor__title" type="text" value="<%= title || '' %>">
+                <h1>Descrição:</h1>
+                <textarea class="editor__description"><%- description || '' %></textarea>
+                <h1>Conteúdo:</h1>
+                <textarea class="editor__content"><%- content || '' %></textarea>
+            </section>
+        </div>
+        <div class="editor-buttons-wrapper">
+            <button type="button" class="buttons__send">Atualizar</button>
+        </div>
+    </main>
+
+    <script src="/assets/prism.js"></script>
+    <script src="/assets/script.js"></script>
+    <script>
+        const editor_title = document.querySelector(".editor__title");
+        const editor_description = document.querySelector(".editor__description");
+        const editor_content = document.querySelector(".editor__content");
+        const post_section_title = document.querySelector(".post-section__title");
+        const post_section_content = document.querySelector(".post-section__content");
+        const buttons_send = document.querySelector(".buttons__send");
+
+        buttons_send.addEventListener("click", async (e) => {
+            try{
+                e.target.disabled = true;
+                const path = window.location.pathname; // "/post/id/edit"
+                const parts = path.split("/");         // ["", "post", "id", "edit"]
+                const postId = parts[2];               // "id"
+
+                const title = editor_title.value;
+                const description = editor_description.value
+                const content = editor_content.value;
+
+                if(title.length <= 5 || title.length >= 200){
+                    window.alert("O título deve ter no mínimo 5 e no máximo 255 caracteres");
+                    return;
+                }
+
+                if(description.length <= 5 || description.length >= 255){
+                    window.alert("A descrição deve ter no mínimo 5 e no máximo 255 caracteres");
+                    return;
+                }
+
+                const request = await fetch("/post/" + postId, {
+                    method: "PATCH",
+                    body: JSON.stringify({title, description, content}),
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if(request.ok){
+                    const payload = await request.json();
+                    window.alert(payload.message);
+                }else{
+                    throw new Error("Erro ao enviar requisição para o servidor!");
+                }
+
+            }catch(err){
+                console.error(err.message);
+            }
+            finally{
+                e.target.disabled = false;
+            }
+            
+        })
+
+
+        editor_title.addEventListener("input", (e) => {
+            post_section_title.textContent = e.target.value;
+        })
+
+        editor_content.addEventListener("input", (e) => {
+            post_section_content.innerHTML = e.target.value;
+            Prism.highlightAll();
+        })
+
+        editor_content.addEventListener("keydown", (e) => {
+            if(e.key == "Tab"){
+                e.preventDefault();
+                const el = e.target;
+                const text = "    ";
+                // Posição atual do cursor
+                const start = el.selectionStart;
+                const end = el.selectionEnd;
+
+                // Texto original do campo
+                const value = el.value;
+
+                // Monta o novo valor
+                el.value = value.substring(0, start) + text + value.substring(end);
+
+                // Reposiciona o cursor logo após o texto inserido
+                el.selectionStart = el.selectionEnd = start + text.length;
+
+                // Dá foco de volta ao campo (opcional)
+                post_section_content.innerHTML = e.target.value;
+                Prism.highlightAll();
+                el.focus();
+            }
+        })
+
+    </script>
+</body>
+
+</html>

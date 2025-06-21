@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Ops!</title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="icon" type="image/png" href="/icons/letra-l.png">
+</head>
+
+<body>
+
+    <%- include('../partials/header.ejs') %>
+
+        <main class="main">
+            <div class="main-wrapper">
+                <section class="notfound-section">
+                    <h1 class="notfound-section__title">401 - Não autorizado</h1>
+                    <p class="notfound-section__p">
+                        Ops! Parece que você tentou acessar uma página que requer autenticação.<br>
+                        Faça login para continuar ou volte para a <a href="/">página inicial</a>.
+                    </p>
+                </section>
+            </div>
+        </main>
+
+        <%- include('../partials/footer.ejs') %>
+
+        <script src="/assets/script.js"></script>
+</body>
+
+</html>

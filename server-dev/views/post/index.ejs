@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/assets/prism.css">
+    <link rel="icon" type="image/png" href="/icons/letra-l.png">
+</head>
+
+<body>
+
+    <%- include('../partials/header.ejs') %>
+
+    <main class="main">
+        <div class="main-wrapper">
+            <section class="post-section">
+                <h1 class="post-section__title"><%= title %></h1>
+                <div class="post-section__info">
+                    <span class="post-section__info-author"><%= author %></span>
+                    <span class="post-section__info-date"><%= creation_date %></span>
+                </div>
+                <div class="post-section__content"><%- content %></div>
+            </section>
+        </div>
+    </main>
+
+    <%- include('../partials/footer.ejs') %>
+
+    <script src="/assets/prism.js"></script>
+    <script src="/assets/script.js"></script>
+</body>
+
+</html>

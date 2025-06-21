@@ -1,0 +1,32 @@
+<header class="site-header">
+    <div class="site-header-wrapper">
+        <div class="site-header__logo">
+            <!-- <img src="./assets/header-icon2.png" alt="Logo da conceitual"> -->
+            <p>LAPAZ</p>
+        </div>
+        
+        <input type="checkbox" id="toggle-menu" style="display: none;">
+        <nav class="site-header__nav">
+            <label for="toggle-menu" class="menu-button">
+                <svg class="menu-button__closed" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+                </svg>
+
+                <svg class="menu-button__opened" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </label>
+            <ul class="nav-menu">
+                <li class="nav-menu__item"><a href="/" class="nav-menu__link">Home</a></li>
+                <li class="nav-menu__item"><a href="/sobre" class="nav-menu__link">About me</a></li>
+                <li class="nav-menu__item"><a href="/blog" class="nav-menu__link">Blog</a></li>
+                <li class="nav-menu__item"><a href="/contato" class="nav-menu__link">Contact</a></li>
+                <% if(user) { %>
+                    <li class="nav-menu__item"><p class="nav-menu__username" onclick="window.location.href='/logout'">Olá, <%= user.username %></p></li>
+                <% } else { %>
+                    <li class="nav-menu__item"><a href="/login" class="nav-menu__link">Login</a></li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
+</header>

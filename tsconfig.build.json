@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./server-build",                          /* Specify an output folder for all emitted files. */
+    "rootDir": "./server-dev",                           /* Specify the root folder within your source files. */
+  },
+  "include": [
+    "server-dev/**/*"
+  ]
+}
