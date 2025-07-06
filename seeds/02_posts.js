@@ -5,8 +5,6 @@
 
 exports.seed = async function (knex) {
 
-    await knex('posts').del();
-
     await knex("posts").insert([
         {
             user_id: 1,
