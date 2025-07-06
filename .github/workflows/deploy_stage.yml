@@ -68,7 +68,6 @@ jobs:
             # Instalar dependências para produção
             npm install --production
 
-
             npx knex migrate:latest
 
             npx knex seed:run
