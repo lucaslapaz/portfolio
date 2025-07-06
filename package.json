@@ -7,7 +7,8 @@
     "test": "jest --detectOpenHandles",
     "tsc": "tsc",
     "dev": "nodemon --ext ts --exec \"ts-node server-dev/index.ts\"",
-    "build": "tsc -p tsconfig.build.json && xcopy server-dev\\views server-build\\views /E /I /Y",
+    "build:win": "tsc -p tsconfig.build.json && xcopy server-dev\\views server-build\\views /E /I /Y",
+    "build:linux": "tsc -p tsconfig.build.json && mkdir -p server-build/views && cp -r server-dev/views/* server-build/views/",
     "prod": "node server-build/index.js",
     "stage": "$"
   },
