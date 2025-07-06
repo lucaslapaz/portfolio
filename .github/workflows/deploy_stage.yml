@@ -67,7 +67,10 @@ jobs:
             # Instalar dependências para produção
             npm install --production
 
+
             npx knex migrate:latest
+
+            npx knex seed:run
 
             # Executar em segundo plano
             nohup npm run prod > output_prod.log 2>&1 &

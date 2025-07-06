@@ -15,11 +15,10 @@ export default class BlogController{
     getBlogPage = async (request:Request, response:Response) : Promise<void> => {
         try{
             const lastListedPosts = await this.blogService.getLastListedPosts();
-            if(lastListedPosts){
-                response.setHeader("Content-Type", "text/html");
-                response.status(200);
-                response.render('blog', {listedPosts: lastListedPosts});
-            }
+            response.setHeader("Content-Type", "text/html");
+            response.status(200);
+            response.render('blog', {listedPosts: lastListedPosts});
+
         }catch(err:any){
             console.log('BlogController->getBlog: ', err.message);
         }

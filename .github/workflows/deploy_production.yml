@@ -69,5 +69,7 @@ jobs:
 
             npx knex migrate:latest
 
+            npx knex seed:run
+
             # Executar em segundo plano
             nohup npm run prod > output_production.log 2>&1 &

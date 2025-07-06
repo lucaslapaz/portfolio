@@ -46,7 +46,6 @@ sandbox/**/*.ts
 sandbox/**/*.js
 posts/
 schemas/populate.sql
-seeds/
 # server-build/
 
 # Snowpack dependency directory (https://snowpack.dev/)
