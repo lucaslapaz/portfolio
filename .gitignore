@@ -40,6 +40,7 @@ build/Release
 
 # Dependency directories
 node_modules/
+server-build/
 jspm_packages/
 sandbox/**/*.ts
 sandbox/**/*.js
