@@ -27,7 +27,8 @@ jobs:
 
       - name: Criar .env localmente
         run: |
-          echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" > .env
+          echo "SERVER_PORT=${{ vers.SERVER_PORT }}" > .env
+          echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
           echo "MYSQL_PORT=${{ secrets.MYSQL_PORT }}" >> .env
           echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
@@ -59,7 +60,7 @@ jobs:
             cd ~/portfolio-production/
             
             # Parar o processo anterior (se estiver rodando na porta 3000, por exemplo)
-            PID=$(lsof -t -i:3000) && if [ -n "$PID" ]; then kill -9 $PID; fi
+            PID=$(lsof -t -i:"${{ vars.SERVER_PORT }}") && if [ -n "$PID" ]; then kill -9 $PID; fi
 
             # Criar banco de dados se não existir
             mysql -u "${{ secrets.MYSQL_USER }}" -p"${{ secrets.MYSQL_PASSWORD }}" < ./schemas/create_production_db.sql

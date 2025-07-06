@@ -2,7 +2,7 @@ import { app } from "./app";
 import { Server } from "http"
 import { Socket } from "node:net";
 
-const PORT:number = 8088;
+const PORT:number = parseInt(process.env.SERVER_PORT as string);
 
 const server:Server = app.listen(PORT, () => {
     console.log(`Servidor ouvindo na porta ${PORT}`);
