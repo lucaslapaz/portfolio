@@ -38,6 +38,7 @@ Abra o terminal na pasta raiz do projeto e execute:
 Crie um arquivo `.env` na pasta raíz com as seguintes variáveis de ambiente:
 
 ```bash
+SERVER_PORT=8088   # Porta em que o servidor rodará
 HOST="localhost"   # Endereço do banco de dados
 PORT=3306          # Porta em que o serviço do MySQL está rodando no seu pc
 USER="root"        # Seu usuário do MySQL
