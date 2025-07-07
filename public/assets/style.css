@@ -71,6 +71,38 @@ small { font-size: var(--text-sm); }
 
 
 
+
+
+
+
+
+
+
+
+.dev-ribbon {
+  position: fixed;
+  top: 20px;            /* distância do topo, ajuste conforme o design */
+  left: -60px;          /* empurra um pouco para fora para centralizar melhor */
+  width: 200px;         /* largura da faixa */
+  height: 50px;         /* altura maior para caber o texto em duas linhas */
+  background: red;
+  color: white;
+  text-align: center;
+  line-height: 24px;    /* define altura das linhas, ajuste conforme tamanho da fonte */
+  transform: rotate(-45deg); /* diagonal indo para cima à esquerda */
+  font-family: sans-serif;
+  font-size: 19px;
+  font-weight: 800px;
+  z-index: 9999;
+  box-shadow: 0 0 5px rgba(0,0,0,0.6);
+  pointer-events: none; /* evita que a faixa atrapa*/
+}
+
+
+
+
+
+
 .site-header{
 
 }
