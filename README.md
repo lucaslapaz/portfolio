@@ -90,7 +90,13 @@ Na pasta raiz do projeto rode o comando:
 
 
 ## 5. Popular as tabelas
-Caso queira popular o banco de dados, crie os arquivos de inserção .js dentro da pasta `seeds` seguindo o exemplo:
+Caso queira popular o banco de dados, execute o seguinte comando:
+
+`npx knex seed:make <nome_da_seed>`
+
+Esse comando vai criar um arquivo .js dentro da pasta `seeds` com o nome que você definiu. O Knex segue a ordem alfabética do nome dos arquivos para executar os seeds, então use números no começo do nome para definir a ordem em que os arquivos serão executados. Consulte a documentação do Knex para mais informações.
+
+Exemplo de seed:
 
 ```js
 /**
@@ -110,7 +116,7 @@ e então execute o script:
 
 `npx knex seed:run`
 
-O Knex segue a ordem alfabética do nome dos arquivos para executar os seeds, então use números no começo do nome para definir a ordem em que os arquivos serão executados. Consulte a documentação do Knex para mais informações.
+
 
 ## 6. Executar o servidor:
 Na pasta raiz rode o comando:
