@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes</title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="icon" type="image/png" href="/icons/letra-l.png">
+</head>
+
+<body>
+
+    <%- include('../partials/header.ejs') %>
+
+    <main class="main">
+        <div class="notes-wrapper wrapper">
+            <section class="notes-section">
+                <div class="notes-section__list-items"></div>
+                <div class="notes-section__file-content"></div>
+            </section>
+        </div>
+    </main>
+
+    <%- include('../partials/footer.ejs') %>
+
+    <script src="/assets/script.js"></script>
+    <script>
+        let itemsListContainer;
+        let fileContentContainer;
+    
+        /*
+        <div class="list-items__file list-items__item">
+            <div class="item__icon">
+                <svg width="10" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                    <path style="fill:#ffffff;stroke:none;" d="m 65,3 0,19 19,0 z"/>
+                    <path style="fill:#EBEBDA;stroke:#777777;stroke-width:2;" d="m 65,3 0,19 19,0 0,74 -72,0 0,-93 53,0 19,19"/>
+                    <path style="fill:#EBEBDA;stroke:#777777;stroke-width:8;" d="M 25,70 25,30 35,55 45,30 45,70 M 55,70 55,33 Q 70,33 70,48 Q 70,68 55,66 z"/>
+                </svg>
+            </div>
+            <p class="item__name">
+                TypeScript - Configuração.md
+            </p>
+        </div>
+        */
+        async function getMetadataList(path){
+            try{
+                let url = path ? "/notes/metadata-list?path=" + encodeURIComponent(path) : "/notes/metadata-list"
+
+                const request = await fetch(url);
+                if(request.ok){
+                    const payload = await request.json();
+                    const success = payload.succes;
+                    const listItems = payload.data;
+                    return listItems;
+                }
+                return null;
+            }catch(err){
+                console.error(err.message);
+            }
+        }
+
+        async function getFileMetadata(path){
+
+            if(!path){
+                console.error("O path deve ser passado");
+                return;
+            }
+
+            let url = "/notes/file-content?path=" + encodeURIComponent(path);
+
+            const request = await fetch(url);
+            if(request.ok){
+                const payload = await request.json();
+                const data = payload.data;
+                return data.content;
+            }
+            return null;
+        }
+
+        async function itemClickHandler(e){
+            console.log('Clicado');
+            const listItem = e.target.closest('.list-items__item');
+            const type = listItem.getAttribute("data-type");
+            const path = listItem.getAttribute("data-path");
+
+            if(type == "file"){
+                fileContentContainer.textContent = await getFileMetadata(path);
+            }else if(type=="dir"){
+                console.log('é dir')
+                const status = listItem.getAttribute("data-status");
+                console.log(status);
+                if(status == "open"){
+                    listItem.setAttribute("data-status", "closed");
+                }
+
+                if(status == "closed"){
+                    console.log('lksadjfkjsad')
+                    listItem.setAttribute("data-status", "open");  
+
+                    const listItems = await getMetadataList(path);
+                    if(listItems != null && listItems.length > 0){
+                        const fragment = createAllListItemsFragment(listItems);
+                        listItem.parentNode.insertBefore(fragment, listItem.nextSibling);
+                    }
+                }
+                
+            }else{
+                console.erro("Tipo de item desconhecido.")
+            }
+        }
+
+        function createAllListItemsFragment(listItems){
+            const fragment = document.createDocumentFragment();
+
+            for(let item of listItems){
+                const itemDiv = document.createElement("div");
+                const className = item.type == "file" ? "list-items__item list-items__file" : "list-items__item list-items__dir";
+                itemDiv.className = className;
+                itemDiv.setAttribute("data-type", item.type)
+                itemDiv.setAttribute("data-path", item.path);
+
+                const iconDiv = document.createElement("div");
+                iconDiv.className = "item__icon";
+                if(item.type === "file"){
+                    iconDiv.innerHTML = `
+                        <svg width="10" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                            <path style="fill:#ffffff;stroke:none;" d="m 65,3 0,19 19,0 z"/>
+                            <path style="fill:#EBEBDA;stroke:#777777;stroke-width:2;" d="m 65,3 0,19 19,0 0,74 -72,0 0,-93 53,0 19,19"/>
+                            <path style="fill:#EBEBDA;stroke:#777777;stroke-width:8;" d="M 25,70 25,30 35,55 45,30 45,70 M 55,70 55,33 Q 70,33 70,48 Q 70,68 55,66 z"/>
+                        </svg>
+                    `;
+                }else{
+                    itemDiv.setAttribute("data-status", "closed");
+                    iconDiv.innerHTML = `
+                        <svg width="800px" height="800px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                            <path style="fill:#D0CEA9;stroke:#222222;stroke-width:2" d="M 4,88 C 4,87 3.6,25 3.6,25 3.6,25 3,20 8,20 c -1,0 6,0 6,0 l 0,-6 c 0,0 0,-3 3,-3 l 17,0 c 0,0 3,0 3,3 l 0,6 43,0 c 0,0 4,0 4,4 l -2,64 z"/>
+                            <path style="fill:#E8DC88;stroke:#222222;stroke-width:2;fill-opacity:0.8" d="M 4,88 15,40 c 0,0 0,-7 8,-7 10,0 66,0 66,0 0,0 9,-1 7,6 -2,7 -12,49 -12,49 z"/>
+                        </svg>
+                    `;
+                }
+
+                const nameP = document.createElement("p");
+                nameP.className = "item__name";
+                nameP.textContent = item.name;
+                
+                itemDiv.appendChild(iconDiv);
+                itemDiv.appendChild(nameP);
+                fragment.appendChild(itemDiv);
+            }
+            return fragment;
+        }
+
+        document.addEventListener("DOMContentLoaded", async function(){
+            listItemsContainer = document.querySelector(".notes-section__list-items");
+            fileContentContainer = document.querySelector(".notes-section__file-content");
+
+            listItemsContainer.addEventListener("click", itemClickHandler);
+
+            const listItems = await getMetadataList("/");
+            if(listItems != null && listItems.length > 0){
+                const fragment = createAllListItemsFragment(listItems, listItemsContainer);
+                listItemsContainer.appendChild(fragment);
+            }
+        })
+
+
+        
+    </script>
+</body>
+
+</html>

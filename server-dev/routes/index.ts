@@ -5,6 +5,7 @@ import BlogController from "../controllers/BlogController";
 import ErrorController from "../controllers/ErrorController";
 import AuthController from "../controllers/AuthController";
 import StatusController from "../controllers/StatusController";
+import NotesController from "../controllers/NotesController";
 
 export default function createRoutes(
     errorHandlerMiddleware: ErrorRequestHandler,
@@ -15,7 +16,8 @@ export default function createRoutes(
     blogController: BlogController,
     errorController: ErrorController,
     authController: AuthController,
-    statusController: StatusController
+    statusController: StatusController,
+    notesController:NotesController
 ) {
     const router = Router();
 
@@ -43,6 +45,11 @@ export default function createRoutes(
 
     router.get("/status", statusController.getServerStatus);
 
+    router.get("/notes", notesController.getNotesPage);
+
+    router.get("/notes/metadata-list", notesController.getMetadaList);
+
+    router.get("/notes/file-content", notesController.getFileContent);
 
     router.get("/unauthorized", errorController.getUnauthorizedPage);
     

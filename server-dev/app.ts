@@ -26,6 +26,9 @@ import errorHandlerMiddleware from "./middlewares/errorHandlerMiddleware";
 import notFoundMiddleware from "./middlewares/notFoundMiddleware";
 import StatusService from "./services/StatusService";
 import StatusController from "./controllers/StatusController";
+import NotesService from "./services/NotesService";
+import NotesController from "./controllers/NotesController";
+import NotesRepository from "./repositories/NotesRepository";
 
 // Configurar para usar o arquivo .env como variáveis de ambiente
 dotenv.config();
@@ -99,6 +102,11 @@ const statusController:StatusController = new StatusController(statusService);
 // Checar permissões do usuário logado
 const checkPermissionMiddleware:Function = checkPermissionMiddlewareFactory(userService);
 
+// Página de anotações
+const notesRepository:NotesRepository = new NotesRepository();
+const notesService:NotesService = new NotesService(notesRepository);
+const notesController:NotesController = new NotesController(notesService);
+
 app.use(
     createRoutes(
         errorHandlerMiddleware,
@@ -109,5 +117,6 @@ app.use(
         blogController, 
         errorController,
         authController,
-        statusController
+        statusController,
+        notesController
 ));
