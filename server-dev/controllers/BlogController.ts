@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import BlogService from "../services/BlogService";
-import Post from "../models/Post";
+import AppError from "../utils/AppError";
 // import PostService from "../services/PostService";
 
 
@@ -12,15 +12,16 @@ export default class BlogController{
         this.blogService = blogService;
     }
 
-    getBlogPage = async (request:Request, response:Response) : Promise<void> => {
+    getBlogPage = async (request:Request, response:Response, next:NextFunction) : Promise<void> => {
         try{
             const lastListedPosts = await this.blogService.getLastListedPosts();
             response.setHeader("Content-Type", "text/html");
             response.status(200);
             response.render('blog', {listedPosts: lastListedPosts});
-
         }catch(err:any){
-            console.log('BlogController->getBlog: ', err.message);
+            let message: string = "ERROR(getBlogPage): Falha ao obter a página do blog: " + err.message;
+            next(new AppError(message, 500));
         }
+        return;
     }
 } 

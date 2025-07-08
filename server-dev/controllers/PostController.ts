@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import PostService from "../services/PostService";
 import ResponseHandler from "../utils/ResponseHandler";
 import Post from "../models/Post";
+import AppError from "../utils/AppError";
 
 
 export default class PostController{
@@ -24,7 +25,8 @@ export default class PostController{
                 if(postId.length > 4){
                     post = await this.postService.getPostByFormattedTitle(postId);
                 }else{
-                    console.error("O título especificado é muito curto.");
+                    next(); // Redireciona para o middleware 404
+                    return;
                 }
             }
             
@@ -52,15 +54,17 @@ export default class PostController{
                 response.status(200);
                 response.render('post', { title: post.title, content: post.content, creation_date: `${dataFormatada} | ${horaFormatada}`, author: post.name});
             }else{
-                next(); // Vai chegar no middleware 404
+                next(); // Redireciona para o middleware 404
             }
         }catch(err: any){
-            response.status(500).json({message: (err as Error).message});
+            let message:string = "ERROR(getPostByIdPage): Falha ao obter a página do post: " + err.message;
+            next(new AppError(message, 500))
         }
         return;
+
     }
 
-    getEditPostByIdPage = async (request: Request, response: Response) : Promise<void> => {
+    getEditPostByIdPage = async (request: Request, response: Response, next:NextFunction) : Promise<void> => {
         try{
 
             const postId:string = request.params.postId;
@@ -74,7 +78,8 @@ export default class PostController{
                 if(postId.length > 4){
                     post = await this.postService.getPostByFormattedTitle(postId);
                 }else{
-                    console.error("O título especificado é muito curto.");
+                    next(new AppError("O id do post especificado é muito curto.", 404)); // Direciona para a página notfound
+                    return;
                 }
             }
 
@@ -115,24 +120,28 @@ export default class PostController{
                 );
             }else{
                 // Define o status como '302 Found' e header Location com valor de destino
-                response.redirect("/post/new")
+                response.redirect("/post/new");
             }
         }catch(err: any){
-            response.status(500).json({message: (err as Error).message});
+            let message:string = "ERROR(getEditPostByIdPage): Falha ao obter a página do editor de post: " + err.message;
+            next(new AppError(message, 500))
         }
+        return;
     }
 
-    getCreatePostPage = async (request: Request, response: Response) : Promise<void> => {
+    getCreatePostPage = async (request: Request, response: Response, next:NextFunction) : Promise<void> => {
         try{
             response.setHeader("Content-Type", "text/html");
             response.status(200);
             response.render('post-creator')
         }catch(err: any){
-            response.status(500).json({message: (err as Error).message});
+            let message:string = "ERROR(getCreatePostPage): Falha ao obter a página de criação de post: " + err.message;
+            next(new AppError(message, 500));
         }
+        return;
     }
 
-    createPost = async (request: Request, response: Response) :Promise<void> => {
+    postCreatePost = async (request: Request, response: Response) :Promise<void> => {
         try{
             if(!request.user || !request.user.id) {
                 ResponseHandler.error(response, "Você precisa estar autenticado para poder postar.");
@@ -150,14 +159,16 @@ export default class PostController{
             const post:Post | null = await this.postService.createPost(user_id, title, description, content);
 
             if(post){
-                ResponseHandler.ok(response, post)
+                ResponseHandler.ok(response, post);
             }else{
                 ResponseHandler.error(response, "Houve algum erro ao tentar criar o post!");
             }
 
         }catch(err:any){
-            console.log(err.message);
+            ResponseHandler.error(response, "Houve algum erro ao tentar criar o post!");
+            
         }
+        return;
     }
 
     patchPostById = async (request: Request, response: Response) : Promise<void> => {
@@ -174,11 +185,16 @@ export default class PostController{
                 if(postId.length > 4){
                     sucess = await this.postService.updatePostByFormattedTitle(postId, title, description, content);
                 }else{
-                    console.error("O título especificado é muito curto.");
+                    ResponseHandler.error(response, "O título especificado é muito curto.");
+                    return;
                 }
             }
+            ResponseHandler.ok(response, {message: "Alterações aplicadas com sucesso."});
+
         }catch(err:any){
-            response.status(500).json({message: (err as Error).message})
+            ResponseHandler.error(response, "Falha ao atualizar as informações do post.")
         }
+        return;
+
     }
 }

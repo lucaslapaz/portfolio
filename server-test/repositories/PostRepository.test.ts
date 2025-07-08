@@ -1,28 +1,41 @@
-import MySQL from "../../server-dev/database/MySQL"
-import Post from "../../server-dev/models/Post";
-import PostRepository from "../../server-dev/repositories/PostRepository";
 import dotenv from "dotenv";
+import MySQL from "../../server-dev/database/MySQL";
+import PostRepository from "../../server-dev/repositories/PostRepository";
+import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import Post from "../../server-dev/models/Post";
 
 dotenv.config();
 
-describe("Testes função getLastListedPosts", () => {
-    const dbInstance = MySQL.getInstance();
-    const db = dbInstance.getPool();
-    const postRepository:PostRepository = new PostRepository(db);
-    
-    it("Testando a função getLastListedPosts", async () => {
-        const posts:Post[] | null = await postRepository.getLastListedPosts();
-        //console.log(posts);
-        expect(2).toBe(2);
+describe("Testes PostRepository", () => {
+
+    let dbInstance:MySQL
+    let db:Pool
+    let postRepository:PostRepository
+
+    beforeAll(() => {
+        dbInstance = MySQL.getInstance();
+        db = dbInstance.getPool();
+        postRepository = new PostRepository(db);
     })
 
-    // it("Testando a função getPostById", async () => {
-    //     const post:Post | null = await postRepository.getPostById(1);
-    //     console.log(post);
-    //     expect(2).toBe(2);
-    // });
-
-    afterAll(async () => {
-        await db.end();
+    afterAll(() => {
+        db.end();
     })
+
+    describe("Testes da função getPostById", () => {
+        it("Parâmetro 0", async() => {
+            const result = await postRepository.getPostById(0);
+            expect(result).toBe(null);
+        })
+
+        it("Parâmetro 1", async() => {
+            const repositoryPost = await postRepository.getPostById(1);
+            expect(repositoryPost).toMatchObject({id: 1});
+        })
+    });
+
+    describe("Testes da função getPostByFormattedTitle", () => {
+        //it()
+    })
+
 })

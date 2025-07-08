@@ -8,7 +8,6 @@ export default class PostRepository {
         this.db = db;
     }
 
-
     /*
         | OkPacket -> DELETE, INSERT, UDPATE
         | OkPacket[] -> DELETE, INSERT, UDPATE
@@ -25,7 +24,20 @@ export default class PostRepository {
 
         if (rows.length == 0) return null;
 
-        const post: Post = (rows as Post[])[0];
+        const row = rows[0];
+
+        // Faz a transformação explicita, evitando erros por causa do type assertion
+        const post:Post = {
+            id: row.id,
+            title: row.title,
+            formatted_title: row.formatted_title,
+            description: row.description,
+            content: row.content,
+            creation_date: row.creation_date,
+            name: row.name
+        }
+
+        //const post: Post = (rows as Post[])[0];
         return post;
 
     }

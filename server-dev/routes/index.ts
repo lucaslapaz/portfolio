@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { ErrorRequestHandler, RequestHandler, Router } from "express";
 import PostController from "../controllers/PostController";
 import HomeController from "../controllers/HomeController";
 import BlogController from "../controllers/BlogController";
@@ -6,6 +6,8 @@ import ErrorController from "../controllers/ErrorController";
 import AuthController from "../controllers/AuthController";
 
 export default function createRoutes(
+    errorHandlerMiddleware: ErrorRequestHandler,
+    notFoundMiddleware: RequestHandler,
     checkPermissionMiddleware: Function,
     postController: PostController,
     homeController: HomeController,
@@ -27,7 +29,7 @@ export default function createRoutes(
 
     router.get("/blog", blogController.getBlogPage);
 
-    router.post("/post", checkPermissionMiddleware(10), postController.createPost);
+    router.post("/post", checkPermissionMiddleware(10), postController.postCreatePost);
     
     router.get("/post/new", checkPermissionMiddleware(10), postController.getCreatePostPage);
 
@@ -38,9 +40,12 @@ export default function createRoutes(
     router.patch("/post/:postId", postController.patchPostById);
 
     router.get("/unauthorized", errorController.getUnauthorizedPage);
+    
+    // Error
+    router.use(errorHandlerMiddleware);
 
     // 404
-    router.use(errorController.getNotFoundPage);
+    router.use(notFoundMiddleware);
 
 
     return router;

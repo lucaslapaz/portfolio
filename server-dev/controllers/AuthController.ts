@@ -1,6 +1,7 @@
-import { request, Request, Response } from "express";
+import { NextFunction, request, Request, Response } from "express";
 import AuthService from "../services/AuthService";
 import ResponseHandler from "../utils/ResponseHandler";
+import AppError from "../utils/AppError";
 
 export default class AuthController{
 
@@ -10,19 +11,17 @@ export default class AuthController{
         this.authService = authService;
     }
 
-    getLoginPage = async (request: Request, response: Response): Promise<void> => {
-        response.setHeader("Content-Type", "text/html");
-        response.status(200);
-        response.render("login");
+    getLoginPage = async (request: Request, response: Response, next:NextFunction): Promise<void> => {
+        try{
+            response.setHeader("Content-Type", "text/html");
+            response.status(200);
+            response.render("login");
+        }catch(err:any){
+            let message:string = "ERROR(getLoginPage): Falha ao obter a página de login: " + err.message;
+            next(new AppError(message, 500));
+        }
         return;
     }
-
-    // getLogout = async (request: Request, response: Response): Promise<void> => {
-    //     response.setHeader("Content-Type", "text/html");
-    //     response.status(200);
-    //     response.render("logout");
-    //     return;
-    // }
 
     postLogin = async (request: Request, response: Response) : Promise<void> => {
         try{
@@ -45,17 +44,16 @@ export default class AuthController{
                 sameSite: 'lax',
                 secure: false
             })
-            ResponseHandler.ok(response, { message: "Logado com sucesso1" });
-            return;
+            ResponseHandler.ok(response, { message: "Logado com sucesso." });
 
         }catch(err:any){
-            console.log("Erro no postLogin: " + err.message);
-            ResponseHandler.error(response, err.message);
+            console.error("Erro no postLogin: " + err.message);
+            ResponseHandler.error(response, "Falha interna do servidor.");
         }
         return;
     }
 
-    getLogoutPage = async (request: Request, response: Response) : Promise<void> => {
+    getLogoutPage = async (request: Request, response: Response, next: NextFunction) : Promise<void> => {
         try{
             //console.log('chegou');
             response.cookie("auth_token", "", {
@@ -66,7 +64,9 @@ export default class AuthController{
             })
             response.redirect("/");
         }catch(err: any){
-            
+            let message:string = "ERROR(getLogouPage): Falha ao obter a página de logout: " + err.message;
+            next(new AppError(message, 500));
         }
+        return;
     }
 }

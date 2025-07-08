@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import {Express, Request, Response, NextFunction} from "express"
 import createRoutes from "./routes";
 import path from "path";
@@ -18,9 +18,12 @@ import AuthController from "./controllers/AuthController";
 import AuthService from "./services/AuthService";
 import UserRepository from "./repositories/UserRepository";
 import authMiddleware from "./middlewares/authMiddleware";
-import checkPermissionMiddlewareFactory from "./middlewares/checkPermissionMiddleware";
 import UserService from "./services/UserService";
 import BlogService from "./services/BlogService";
+
+import checkPermissionMiddlewareFactory from "./middlewares/checkPermissionMiddleware";
+import errorHandlerMiddleware from "./middlewares/errorHandlerMiddleware";
+import notFoundMiddleware from "./middlewares/notFoundMiddleware";
 
 // Configurar para usar o arquivo .env como variáveis de ambiente
 dotenv.config();
@@ -92,6 +95,8 @@ const checkPermissionMiddleware:Function = checkPermissionMiddlewareFactory(user
 
 app.use(
     createRoutes(
+        errorHandlerMiddleware,
+        notFoundMiddleware,
         checkPermissionMiddleware,
         postController, 
         homeController, 
