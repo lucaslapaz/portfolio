@@ -24,6 +24,8 @@ import BlogService from "./services/BlogService";
 import checkPermissionMiddlewareFactory from "./middlewares/checkPermissionMiddleware";
 import errorHandlerMiddleware from "./middlewares/errorHandlerMiddleware";
 import notFoundMiddleware from "./middlewares/notFoundMiddleware";
+import StatusService from "./services/StatusService";
+import StatusController from "./controllers/StatusController";
 
 // Configurar para usar o arquivo .env como variáveis de ambiente
 dotenv.config();
@@ -90,6 +92,10 @@ const userService:UserService = new UserService(userRepository);
 const authService = new AuthService(userRepository);
 const authController = new AuthController(authService);
 
+// Server Status
+const statusService:StatusService = new StatusService();
+const statusController:StatusController = new StatusController(statusService);
+
 // Checar permissões do usuário logado
 const checkPermissionMiddleware:Function = checkPermissionMiddlewareFactory(userService);
 
@@ -102,5 +108,6 @@ app.use(
         homeController, 
         blogController, 
         errorController,
-        authController
+        authController,
+        statusController
 ));

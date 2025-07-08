@@ -4,6 +4,7 @@ import HomeController from "../controllers/HomeController";
 import BlogController from "../controllers/BlogController";
 import ErrorController from "../controllers/ErrorController";
 import AuthController from "../controllers/AuthController";
+import StatusController from "../controllers/StatusController";
 
 export default function createRoutes(
     errorHandlerMiddleware: ErrorRequestHandler,
@@ -13,7 +14,8 @@ export default function createRoutes(
     homeController: HomeController,
     blogController: BlogController,
     errorController: ErrorController,
-    authController: AuthController
+    authController: AuthController,
+    statusController: StatusController
 ) {
     const router = Router();
 
@@ -23,9 +25,9 @@ export default function createRoutes(
 
     router.get("/login", authController.getLoginPage);
 
-    router.get("/logout", authController.getLogoutPage);
-
     router.post("/login", authController.postLogin);
+    
+    router.get("/logout", authController.getLogoutPage);
 
     router.get("/blog", blogController.getBlogPage);
 
@@ -38,6 +40,9 @@ export default function createRoutes(
     router.get("/post/:postId/edit", checkPermissionMiddleware(10), postController.getEditPostByIdPage);
 
     router.patch("/post/:postId", postController.patchPostById);
+
+    router.get("/status", statusController.getServerStatus);
+
 
     router.get("/unauthorized", errorController.getUnauthorizedPage);
     
