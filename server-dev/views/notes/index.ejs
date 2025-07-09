@@ -40,8 +40,6 @@
         let fileText;
         let topBar;
         let activeListItem;
-
-
         const contentCache = new Map();
         const listCache = new Map()
     
@@ -65,7 +63,7 @@
                 <p>Nome do arquivo.md</p>
             </div>
         */
-        async function getMetadataList(path){
+        async function getMetadataList(path = "/"){
             try{
                 let url = path ? "/notes/metadata-list?path=" + encodeURIComponent(path) : "/notes/metadata-list"
 
