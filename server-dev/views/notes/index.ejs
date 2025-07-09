@@ -290,7 +290,7 @@
             fileTextDiv = document.querySelector(".file-content__text");
             topBarDiv = document.querySelector(".file-content__top-bar");
 
-            listItemsContainer.addEventListener("click", itemClickHandler);
+            listItemsContainer.addEventListener("mousedown", itemClickHandler);
 
             const listItems = await getMetadataList("/");
             if(listItems != null && listItems.length > 0){
