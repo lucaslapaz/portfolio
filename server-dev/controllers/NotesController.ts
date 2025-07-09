@@ -53,7 +53,6 @@ export default class NotesController{
 
             if(content){
                 ResponseHandler.ok(response, {path, content});
-                console.log(content);
                 return;
             }
 
