@@ -62,7 +62,9 @@ jobs:
             cd ~/portfolio-production/
             
             # Parar o processo anterior (se estiver rodando na porta 3000, por exemplo)
-            PID=$(lsof -t -i:"${{ vars.SERVER_PORT }}") && if [ -n "$PID" ]; then kill -9 $PID; fi
+            #PID=$(lsof -t -i:"${{ vars.SERVER_PORT }}") && if [ -n "$PID" ]; then kill -9 $PID; fi
+
+            pm2 stop production
 
             # Criar banco de dados se não existir
             mysql -u "${{ secrets.MYSQL_USER }}" -p"${{ secrets.MYSQL_PASSWORD }}" < ./schemas/create_production_db.sql
@@ -75,4 +77,4 @@ jobs:
             npx knex seed:run
 
             # Executar em segundo plano
-            nohup npm run prod > output_production.log 2>&1 &
+            pm2 start production

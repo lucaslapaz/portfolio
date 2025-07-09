@@ -48,6 +48,7 @@
         let fileTextDiv;
         let topBarDiv;
         let activeListItem;
+        let processingItemClickEvent = false;
         const contentCache = new Map();
         const listCache = new Map()
     
@@ -87,7 +88,6 @@
                         listItems = payload.data;
                         listCache.set(path, listItems);
                     }
-                    
                     return listItems;
                 }
                 return null;
@@ -98,28 +98,32 @@
 
         async function getFileMetadata(path){
 
-            if(!path){
-                console.error("O path deve ser passado");
-                return;
-            }
+            try{
+                if(!path){
+                    console.error("O path deve ser passado");
+                    return;
+                }
 
-            let content;
-            if(contentCache.has(path)){
-                content = contentCache.get(path);
-                return content;
-            }
+                let content;
+                if(contentCache.has(path)){
+                    content = contentCache.get(path);
+                    return content;
+                }
 
-            let url = "/notes/file-content?path=" + encodeURIComponent(path);
+                let url = "/notes/file-content?path=" + encodeURIComponent(path);
 
-            const request = await fetch(url);
-            if(request.ok){
-                const payload = await request.json();
-                const data = payload.data;
-                content = data.content;
-                contentCache.set(path, content);
-                return content;
+                const request = await fetch(url);
+                if(request.ok){
+                    const payload = await request.json();
+                    const data = payload.data;
+                    content = data.content;
+                    contentCache.set(path, content);
+                    return content;
+                }
+                return null;
+            }catch(err){
+                console.log('Error: ' + err);
             }
-            return null;
         }
 
 
@@ -173,13 +177,13 @@
             fileTextDiv.scrollTop = 0;
         }
 
-        let processingClick = false;
+        
         async function itemClickHandler(e){
-            if(processingClick == true){
+            if(processingItemClickEvent == true){
                 return;
             }
 
-            processingClick = true;
+            processingItemClickEvent = true;
             const listItem = e.target.closest('.list-items__item');
             const type = listItem.getAttribute("data-type");
             const path = listItem.getAttribute("data-path");
@@ -218,7 +222,7 @@
             }else{
                 console.erro("Tipo de item desconhecido.")
             }
-            processingClick =false;
+            processingItemClickEvent =false;
         }
 
 
