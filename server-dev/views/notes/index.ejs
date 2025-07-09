@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notes</title>
+    <title>My Notes</title>
     <link rel="stylesheet" href="/assets/style.css">
     <link rel="icon" type="image/png" href="/icons/letra-l.png">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css" /> -->
@@ -16,12 +16,20 @@
 
 <body class="body-fullscreen">
 
-    <%- include('../partials/header.ejs') %>
+    <%- //include('../partials/header.ejs') %>
 
     <main class="main-notes-section">
         <div class="notes-wrapper">
             <section class="notes-section">
-                <div class="notes-section__list-items"></div>
+                <div>
+                    <div class="notes-navbar">
+                        <a class="notes-navbar__item" href="/">Home</a>
+                        <a class="notes-navbar__item" href="/blog">Blog</a>
+                        <a class="notes-navbar__item" href="https://github.com/lucaslapaz/portfolio">This Repository</a>
+                        <a class="notes-navbar__item" href="/login">Login</a>
+                    </div>
+                    <div class="notes-section__list-items"></div>
+                </div>
                 <div class="notes-section__file-container">
                     <div class="file-content__top-bar"></div>
                     <div class="file-content__text markdown-body"></div>
@@ -37,8 +45,8 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
     <script>
         let itemsListContainer;
-        let fileText;
-        let topBar;
+        let fileTextDiv;
+        let topBarDiv;
         let activeListItem;
         const contentCache = new Map();
         const listCache = new Map()
@@ -114,8 +122,9 @@
             return null;
         }
 
+
         function changeFileName(fileNameData){
-            let fileNameDiv = topBar.querySelector('.top-bar__file-name');
+            let fileNameDiv = topBarDiv.querySelector('.top-bar__file-name');
 
             if(!fileNameDiv){
                 fileNameDiv = document.createElement('div');
@@ -134,10 +143,10 @@
                 nameP.className = "file-name__p"
                 fileNameDiv.appendChild(iconDiv);
                 fileNameDiv.appendChild(nameP);
-                topBar.appendChild(fileNameDiv)
+                topBarDiv.appendChild(fileNameDiv)
             }
 
-            const nameP = topBar.querySelector(".file-name__p");
+            const nameP = topBarDiv.querySelector(".file-name__p");
             nameP.textContent = fileNameData;
         }
 
@@ -148,6 +157,20 @@
             }
             listItem.setAttribute('data-active', 'true');
             activeListItem = listItem;
+        }
+
+        async function loadFileContent(path){
+            let content = await getFileMetadata(path);
+            let formatted = marked.parse(content);
+            fileTextDiv.innerHTML = formatted;
+
+            renderMathInElement(fileTextDiv, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+            fileTextDiv.scrollTop = 0;
         }
 
         let processingClick = false;
@@ -162,20 +185,9 @@
             const path = listItem.getAttribute("data-path");
 
             if(type == "file"){
-                let content = await getFileMetadata(path);
-                let formatted = marked.parse(content);
                 let fileNameData = listItem.getAttribute("data-file-name");
-                fileText.innerHTML = formatted;
-
+                await loadFileContent(path);
                 changeFileName(fileNameData);
-
-                renderMathInElement(fileText, {
-                    delimiters: [
-                        {left: "$$", right: "$$", display: true},
-                        {left: "$", right: "$", display: false}
-                    ]
-                });
-                fileText.scrollTop = 0;
                 setActiveListItem(listItem);
             }
             else if(type=="dir"){
@@ -208,6 +220,7 @@
             }
             processingClick =false;
         }
+
 
         function createAllListItems(listItems, path){
 
@@ -270,8 +283,8 @@
 
         document.addEventListener("DOMContentLoaded", async function(){
             listItemsContainer = document.querySelector(".notes-section__list-items");
-            fileText = document.querySelector(".file-content__text");
-            topBar = document.querySelector(".file-content__top-bar");
+            fileTextDiv = document.querySelector(".file-content__text");
+            topBarDiv = document.querySelector(".file-content__top-bar");
 
             listItemsContainer.addEventListener("click", itemClickHandler);
 
@@ -280,10 +293,10 @@
                 const containerDiv = createAllListItems(listItems, "/");
                 listItemsContainer.appendChild(containerDiv);
             }
+
+            const readme = document.querySelector('[data-file-name="README.md"]');
+            readme.click();
         })
-
-
-        
     </script>
 </body>
 
