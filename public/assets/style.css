@@ -37,6 +37,17 @@ html{
     --text-base: 1.7rem;
     --text-sm: 1.2rem;
     --text-xs: 0.8rem;
+
+
+    /* cores do editor */
+     /* Fundo principal (editor, tela geral) */
+    --editor-content-dark: rgb(13, 17, 23);
+    /* Fundo da lista de arquivos */
+    --files-list-bg-dark: rgb(22, 27, 34);
+    /* Barra superior com nomes dos arquivos */
+    --top-bar-bg-dark: rgb(33, 38, 45);
+    /* Cor do nome do arquivo aberto / ativo */
+    --file-active-name: rgb(52, 102, 160);
 }
 
 *{
@@ -117,7 +128,6 @@ small { font-size: var(--text-sm); }
     height: 15rem;
     max-width: 1000px;
     margin: 0 auto;
-    margin-bottom: 40px;
     padding-left: 20px;
     padding-right: 20px;
     /* background-color: darkgrey; */
@@ -216,6 +226,7 @@ small { font-size: var(--text-sm); }
 
 
 .main{
+    margin-top: 40px;
     margin-bottom: 15rem;
     width: 100%;
 }
@@ -690,25 +701,71 @@ small { font-size: var(--text-sm); }
 
 /* ======== Estilo específico para a página Notes ======== */
 
+/* 
+    Por algum motivo, talvez o markdown esteja setando algum 
+    elemento com position absolute ou algo do tipo, o overflo-y 
+    hidden apenas no container do texto não adianta, sendo necessário 
+    colocar no body.
+*/
+.body-fullscreen{
+    width:  100%;
+    height: 100vh !important;
+    overflow: hidden; 
+}
+
+.main-notes-section{
+    width: 100%;
+    height: calc(100% - 15rem); /* 15rem = height do .site-header-wrapper */
+    background-color: rgb(255, 0, 0);
+}
 
 .notes-wrapper{
-    width: 90%;
+    width: 100%;
+    height: 100%;
     /* max-width: 1000px; */
-    margin: 0 auto;
+    /* margin: 0 auto; */
     background-color: green;
 }
 
 .notes-section{
     width: 100%;
-    height: 800px;
+    height: 100%;
     display: flex;
     flex-direction: row;
 }
 
+
+/* Aplica o mesmo estilo às duas classes */
+.notes-section__list-items::-webkit-scrollbar,
+.file-content__text::-webkit-scrollbar {
+    width: 12px;             /* largura da barra vertical */
+    height: 12px;            /* altura da barra horizontal */
+}
+
+.notes-section__list-items::-webkit-scrollbar-track,
+.file-content__text::-webkit-scrollbar-track {
+    background: #252526;     /* cor do track (similar ao fundo do VS Code) */
+}
+
+.notes-section__list-items::-webkit-scrollbar-thumb,
+.file-content__text::-webkit-scrollbar-thumb {
+    background-color: #5a5a5a; /* cor do thumb */
+    border-radius: 0;          /* retangular, sem arredondamento */
+}
+
+.notes-section__list-items::-webkit-scrollbar-thumb:hover,
+.file-content__text::-webkit-scrollbar-thumb:hover {
+    background-color: #646464; /* cor ao passar o mouse */
+}
+
+
+
 .notes-section__list-items{
+    flex-shrink: 0;
+    z-index: 2;
     padding-top: 2rem;
     padding-bottom: 2rem;
-    background-color: #333;
+    background-color: var(--files-list-bg-dark);
     width: 400px;
     height: 100%;
     overflow-y: auto;
@@ -726,7 +783,7 @@ small { font-size: var(--text-sm); }
 
 .list-items__item{
     width: 100%;
-    padding: .4rem 2rem;
+    padding: .4rem 2rem; /* está sendo aplicado no js*/
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -734,14 +791,17 @@ small { font-size: var(--text-sm); }
     overflow-x: hidden;
     cursor: pointer;
     color: white;
-
 }
 
 .list-items__item:hover{
-    background-color: #525252;
+    background-color: rgba(0, 0, 0, 0.301);
 }
 
-.item__icon{
+.list-items__item[data-active="true"]{
+    background-color: var(--file-active-name);
+}
+
+.item-icon{
     width: 2.2rem;
     height: 2.2rem;
     margin-right: 1rem;
@@ -749,11 +809,27 @@ small { font-size: var(--text-sm); }
     flex-shrink: 0;
 }
 
-.item__icon svg{
+.item-icon__svg{
     display: block;
     width: 100%;
     height: 100%;
     fill: white;
+}
+
+.list-items__item[data-status="open"] .item-icon__svg--closed {
+    display: none !important;
+}
+
+.list-items__item[data-status="open"] .item-icon__svg--open {
+    display: block !important;
+}
+
+.list-items__item[data-status="closed"] .item-icon__svg--closed {
+    display: block !important;
+}
+
+.list-items__item[data-status="closed"] .item-icon__svg--open {
+    display: none !important;
 }
 
 .item__name{
@@ -771,14 +847,60 @@ small { font-size: var(--text-sm); }
 }
 
 
-.notes-section__file-content{
-    overflow-y: auto;
-    overflow-x: hidden;
+.notes-section__file-container{
+    display: flex;
+    flex-direction: column;
     background-color: #242424;
     flex-grow: 1;
     width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
+ 
+.file-content__top-bar{
+    flex-shrink: 0;
+    width: 100%;
+    height: 5rem;
+    background-color: var(--top-bar-bg-dark);
+    box-shadow: 0 0 .3rem black;
+    z-index: 1;
+}
+
+.top-bar__file-name{
+    background-color: rgba(0, 0, 0, 0.233);
+    padding: 5px 20px;
+    height: 100%;
+    width: fit-content;
+    font-weight: 500;
+    user-select: none;
+    border-right: 1px solid rgba(0, 0, 0, 0.137);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.file-name__p{
+    color: white
+}
+
+
+.file-content__text{
+    padding: 3rem;
+    height: 100%;;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-grow: 1;
+}
+
+.file-content__text:empty::after{
+    content: 'Selecione algum arquivo.';
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-content: center;
+}
 
 
 

@@ -7,31 +7,47 @@
     <title>Notes</title>
     <link rel="stylesheet" href="/assets/style.css">
     <link rel="icon" type="image/png" href="/icons/letra-l.png">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css" /> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-dark.min.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+     
 </head>
 
-<body>
+<body class="body-fullscreen">
 
     <%- include('../partials/header.ejs') %>
 
-    <main class="main">
-        <div class="notes-wrapper wrapper">
+    <main class="main-notes-section">
+        <div class="notes-wrapper">
             <section class="notes-section">
                 <div class="notes-section__list-items"></div>
-                <div class="notes-section__file-content"></div>
+                <div class="notes-section__file-container">
+                    <div class="file-content__top-bar"></div>
+                    <div class="file-content__text markdown-body"></div>
+                </div>
             </section>
         </div>
     </main>
 
-    <%- include('../partials/footer.ejs') %>
-
     <script src="/assets/script.js"></script>
+    <script src="/assets/marked.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
     <script>
         let itemsListContainer;
-        let fileContentContainer;
+        let fileText;
+        let topBar;
+        let activeListItem;
+
+
+        const contentCache = new Map();
+        const listCache = new Map()
     
         /*
         <div class="list-items__file list-items__item">
-            <div class="item__icon">
+            <div class="item-icon">
                 <svg width="10" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
                     <path style="fill:#ffffff;stroke:none;" d="m 65,3 0,19 19,0 z"/>
                     <path style="fill:#EBEBDA;stroke:#777777;stroke-width:2;" d="m 65,3 0,19 19,0 0,74 -72,0 0,-93 53,0 19,19"/>
@@ -43,15 +59,29 @@
             </p>
         </div>
         */
+
+        /*
+            <div class="top-bar__file-name">
+                <p>Nome do arquivo.md</p>
+            </div>
+        */
         async function getMetadataList(path){
             try{
                 let url = path ? "/notes/metadata-list?path=" + encodeURIComponent(path) : "/notes/metadata-list"
 
                 const request = await fetch(url);
                 if(request.ok){
-                    const payload = await request.json();
-                    const success = payload.succes;
-                    const listItems = payload.data;
+                    let listItems;
+
+                    if(listCache.has(path)){
+                        listItems = listCache.get(path);
+                    }else{
+                        const payload = await request.json();
+                        const success = payload.succes;
+                        listItems = payload.data;
+                        listCache.set(path, listItems);
+                    }
+                    
                     return listItems;
                 }
                 return null;
@@ -67,51 +97,133 @@
                 return;
             }
 
+            let content;
+            if(contentCache.has(path)){
+                content = contentCache.get(path);
+                return content;
+            }
+
             let url = "/notes/file-content?path=" + encodeURIComponent(path);
 
             const request = await fetch(url);
             if(request.ok){
                 const payload = await request.json();
                 const data = payload.data;
-                return data.content;
+                content = data.content;
+                contentCache.set(path, content);
+                return content;
             }
             return null;
         }
 
+        function changeFileName(fileNameData){
+            let fileNameDiv = topBar.querySelector('.top-bar__file-name');
+
+            if(!fileNameDiv){
+                fileNameDiv = document.createElement('div');
+                fileNameDiv.setAttribute("class", "top-bar__file-name");
+
+                const iconDiv = document.createElement("div");
+                iconDiv.className = "item-icon";
+                iconDiv.innerHTML = `
+                    <svg class="item-icon__svg width="10" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                        <path style="fill:#ffffff;stroke:none;" d="m 65,3 0,19 19,0 z"/>
+                        <path style="fill:#EBEBDA;stroke:#777777;stroke-width:2;" d="m 65,3 0,19 19,0 0,74 -72,0 0,-93 53,0 19,19"/>
+                        <path style="fill:#EBEBDA;stroke:#777777;stroke-width:8;" d="M 25,70 25,30 35,55 45,30 45,70 M 55,70 55,33 Q 70,33 70,48 Q 70,68 55,66 z"/>
+                    </svg>
+                `;
+                const nameP = document.createElement("p"); 
+                nameP.className = "file-name__p"
+                fileNameDiv.appendChild(iconDiv);
+                fileNameDiv.appendChild(nameP);
+                topBar.appendChild(fileNameDiv)
+            }
+
+            const nameP = topBar.querySelector(".file-name__p");
+            nameP.textContent = fileNameData;
+        }
+
+
+        function setActiveListItem(listItem){
+            if(activeListItem){
+                activeListItem.removeAttribute("data-active");
+            }
+            listItem.setAttribute('data-active', 'true');
+            activeListItem = listItem;
+        }
+
+        let processingClick = false;
         async function itemClickHandler(e){
-            console.log('Clicado');
+            if(processingClick == true){
+                return;
+            }
+
+            processingClick = true;
             const listItem = e.target.closest('.list-items__item');
             const type = listItem.getAttribute("data-type");
             const path = listItem.getAttribute("data-path");
 
             if(type == "file"){
-                fileContentContainer.textContent = await getFileMetadata(path);
-            }else if(type=="dir"){
-                console.log('é dir')
+                let content = await getFileMetadata(path);
+                let formatted = marked.parse(content);
+                let fileNameData = listItem.getAttribute("data-file-name");
+                fileText.innerHTML = formatted;
+
+                changeFileName(fileNameData);
+
+                renderMathInElement(fileText, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ]
+                });
+                fileText.scrollTop = 0;
+                setActiveListItem(listItem);
+            }
+            else if(type=="dir"){
                 const status = listItem.getAttribute("data-status");
-                console.log(status);
                 if(status == "open"){
+                    const container = document.querySelector(`[data-folder-parent="${path}"]`);
+                    if(container){
+                        // container.parentNode.removeChild(container)
+                        container.style['display'] = 'none';
+                    }
                     listItem.setAttribute("data-status", "closed");
                 }
 
                 if(status == "closed"){
-                    console.log('lksadjfkjsad')
-                    listItem.setAttribute("data-status", "open");  
-
-                    const listItems = await getMetadataList(path);
-                    if(listItems != null && listItems.length > 0){
-                        const fragment = createAllListItemsFragment(listItems);
-                        listItem.parentNode.insertBefore(fragment, listItem.nextSibling);
+                    const container = document.querySelector(`[data-folder-parent="${path}"]`);
+                    if(container){
+                        container.style['display'] = 'block';
+                        listItem.setAttribute("data-status", "open"); 
+                    }else{
+                        const listItems = await getMetadataList(path);
+                        if(listItems != null && listItems.length > 0){
+                            const fragment = createAllListItems(listItems, path);
+                            listItem.parentNode.insertBefore(fragment, listItem.nextSibling);
+                            listItem.setAttribute("data-status", "open"); 
+                        }
                     }
                 }
-                
             }else{
                 console.erro("Tipo de item desconhecido.")
             }
+            processingClick =false;
         }
 
-        function createAllListItemsFragment(listItems){
-            const fragment = document.createDocumentFragment();
+        function createAllListItems(listItems, path){
+
+            if(!listItems || listItems.length == 0){
+                return null;
+            }
+
+            // const fragment = document.createDocumentFragment();
+            const itemsContainer = document.createElement('div');
+            const levelRegex = /[^\\/]+/g;
+            const levelMatches = path.match(levelRegex)
+            const level = levelMatches ? levelMatches.length + 1 : 1;
+            itemsContainer.setAttribute("data-folder-parent", path);
+            itemsContainer.className = `list-items__container`;
 
             for(let item of listItems){
                 const itemDiv = document.createElement("div");
@@ -119,12 +231,14 @@
                 itemDiv.className = className;
                 itemDiv.setAttribute("data-type", item.type)
                 itemDiv.setAttribute("data-path", item.path);
+                itemDiv.style["padding"] = `.4rem ${2*level}rem`
 
                 const iconDiv = document.createElement("div");
-                iconDiv.className = "item__icon";
+                iconDiv.className = "item-icon";
                 if(item.type === "file"){
+                    itemDiv.setAttribute("data-file-name", item.name);
                     iconDiv.innerHTML = `
-                        <svg width="10" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                        <svg class="item-icon__svg width="10" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
                             <path style="fill:#ffffff;stroke:none;" d="m 65,3 0,19 19,0 z"/>
                             <path style="fill:#EBEBDA;stroke:#777777;stroke-width:2;" d="m 65,3 0,19 19,0 0,74 -72,0 0,-93 53,0 19,19"/>
                             <path style="fill:#EBEBDA;stroke:#777777;stroke-width:8;" d="M 25,70 25,30 35,55 45,30 45,70 M 55,70 55,33 Q 70,33 70,48 Q 70,68 55,66 z"/>
@@ -133,9 +247,14 @@
                 }else{
                     itemDiv.setAttribute("data-status", "closed");
                     iconDiv.innerHTML = `
-                        <svg width="800px" height="800px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                        <svg class="item-icon__svg item-icon__svg--closed" display="none" width="10" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
                             <path style="fill:#D0CEA9;stroke:#222222;stroke-width:2" d="M 4,88 C 4,87 3.6,25 3.6,25 3.6,25 3,20 8,20 c -1,0 6,0 6,0 l 0,-6 c 0,0 0,-3 3,-3 l 17,0 c 0,0 3,0 3,3 l 0,6 43,0 c 0,0 4,0 4,4 l -2,64 z"/>
                             <path style="fill:#E8DC88;stroke:#222222;stroke-width:2;fill-opacity:0.8" d="M 4,88 15,40 c 0,0 0,-7 8,-7 10,0 66,0 66,0 0,0 9,-1 7,6 -2,7 -12,49 -12,49 z"/>
+                        </svg>
+
+                        <svg class="item-icon__svg item-icon__svg--open" display="none" width="10" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                            <path style="fill:#D9D58F;stroke:#222;stroke-width:2" d="m 2,88 c 0,-1 0,-63 0,-63 0,0 -0.6,-5 4.4,-5 -1,0 5.6,0 5.6,0 l 0,-6 c 0,0 0,-3 3,-3 l 17,0 c 0,0 3,0 3,3 l 0,6 43,0 c 0,0 4,0 4,4 l 0,64 z"/>
+                            <path style="fill:#E8DC88;stroke:#222;stroke-width:2;fill-opacity:0.7" d="M 2,88 17,54 c 0,0 1,-5 9,-5 11,0 65,0 65,0 0,0 9,0 7,5 -2,5 -14,34 -14,34 z"/>
                         </svg>
                     `;
                 }
@@ -146,21 +265,22 @@
                 
                 itemDiv.appendChild(iconDiv);
                 itemDiv.appendChild(nameP);
-                fragment.appendChild(itemDiv);
+                itemsContainer.appendChild(itemDiv);
             }
-            return fragment;
+            return itemsContainer;
         }
 
         document.addEventListener("DOMContentLoaded", async function(){
             listItemsContainer = document.querySelector(".notes-section__list-items");
-            fileContentContainer = document.querySelector(".notes-section__file-content");
+            fileText = document.querySelector(".file-content__text");
+            topBar = document.querySelector(".file-content__top-bar");
 
             listItemsContainer.addEventListener("click", itemClickHandler);
 
             const listItems = await getMetadataList("/");
             if(listItems != null && listItems.length > 0){
-                const fragment = createAllListItemsFragment(listItems, listItemsContainer);
-                listItemsContainer.appendChild(fragment);
+                const containerDiv = createAllListItems(listItems, "/");
+                listItemsContainer.appendChild(containerDiv);
             }
         })
 
