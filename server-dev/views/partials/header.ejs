@@ -21,11 +21,11 @@
             </label>
             <ul class="nav-menu">
                 <li class="nav-menu__item"><a href="/" class="nav-menu__link">Home</a></li>
-                <li class="nav-menu__item"><a href="/about" class="nav-menu__link">About Me</a></li>
                 <li class="nav-menu__item"><a href="/blog" class="nav-menu__link">Blog</a></li>
-                <li class="nav-menu__item"><a href="https://github.com/lucaslapaz/portfolio" class="nav-menu__link">This Repository</a></li>
-                <li class="nav-menu__item"><a href="/contact" class="nav-menu__link">Contact</a></li>
                 <li class="nav-menu__item"><a href="/notes" class="nav-menu__link">My Notes</a></li>
+                <li class="nav-menu__item"><a href="https://github.com/lucaslapaz/portfolio" class="nav-menu__link">This Repository</a></li>
+                <li class="nav-menu__item"><a href="/about" class="nav-menu__link">About Me</a></li>
+                <li class="nav-menu__item"><a href="/contact" class="nav-menu__link">Contact</a></li>
                 <% if(user) { %>
                     <li class="nav-menu__item"><p class="nav-menu__username" onclick="window.location.href='/logout'">Olá, <%= user.username %></p></li>
                 <% } else { %>
