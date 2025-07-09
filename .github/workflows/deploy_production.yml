@@ -76,5 +76,4 @@ jobs:
 
             npx knex seed:run
 
-            # Executar em segundo plano
             pm2 start production
