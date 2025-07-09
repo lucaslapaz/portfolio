@@ -299,7 +299,7 @@
             }
 
             const readme = document.querySelector('[data-file-name="README.md"]');
-            readme.click();
+            readme.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
         })
     </script>
 </body>
