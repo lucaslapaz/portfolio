@@ -36,6 +36,9 @@ jobs:
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "JWT_EXPIRES_IN=${{ vars.JWT_EXPIRES_IN }}" >> .env
           echo "COOKIE_EXPIRES_IN=${{ vars.COOKIE_EXPIRES_IN }}" >> .env
+          echo "USER_AUTH_TOKEN=${{ secrets.USER_AUTH_TOKEN }}" >> .env
+          echo "REPOSITORY_API_URL=${{ secrets.REPOSITORY_API_URL }}" >> .env
+          
 
       - name: Enviar arquivos para VPS via SSH
         uses: appleboy/scp-action@v0.1.7
