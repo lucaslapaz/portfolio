@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import crypto from "crypto";
 
-export class JwtUtil {
+export default class JwtUtil {
 
     /**
      * Gera um token JWT assinado.

@@ -8,8 +8,6 @@ import StatusController from "../controllers/StatusController";
 import NotesController from "../controllers/NotesController";
 
 export default function createRoutes(
-    errorHandlerMiddleware: ErrorRequestHandler,
-    notFoundMiddleware: RequestHandler,
     checkPermissionMiddleware: Function,
     postController: PostController,
     homeController: HomeController,
@@ -52,13 +50,6 @@ export default function createRoutes(
     router.get("/notes/file-content", notesController.getFileContent);
 
     router.get("/unauthorized", errorController.getUnauthorizedPage);
-    
-    // Error
-    router.use(errorHandlerMiddleware);
-
-    // 404
-    router.use(notFoundMiddleware);
-
 
     return router;
 }

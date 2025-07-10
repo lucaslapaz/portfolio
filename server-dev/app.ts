@@ -109,8 +109,6 @@ const notesController:NotesController = new NotesController(notesService);
 
 app.use(
     createRoutes(
-        errorHandlerMiddleware,
-        notFoundMiddleware,
         checkPermissionMiddleware,
         postController, 
         homeController, 
@@ -120,3 +118,9 @@ app.use(
         statusController,
         notesController
 ));
+
+// Error
+app.use(errorHandlerMiddleware);
+
+// 404
+app.use(notFoundMiddleware);

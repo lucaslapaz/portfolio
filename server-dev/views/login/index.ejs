@@ -19,6 +19,7 @@
                 <h1 class="login-section__title">LOGIN</h1>
                 <input type="input" class="login-section__username">
                 <input type="password" class="login-section__password">
+                <input type="hidden" id="csrf_token" value="<%- csrfToken %>">
                 <button type="button" class="login-section__submit">Entrar</button>
             </section>
         </div>
@@ -30,15 +31,23 @@
     <script>
         const usernameInput = document.querySelector(".login-section__username");
         const passwordInput = document.querySelector(".login-section__password");
+        const csrfTokenInput = document.getElementById("csrf_token");
         const submitButton = document.querySelector(".login-section__submit");
 
         submitButton.addEventListener("click", async (e) => {
 
             let username = usernameInput.value.trim();
             let password = passwordInput.value;
+            let csrfToken = csrfTokenInput.value;
 
             if(password.length < 5 || username.length < 5){
                 const msg = "O usuário ou a senha possuem no mínimo 5 caracteres cada.";
+                window.alert(msg);
+                return;
+            }
+
+            if(csrfToken == null){
+                const msg = "Nenhum token csrf foi encontrado. Impossível concluir a operação.";
                 window.alert(msg);
                 return;
             }
@@ -52,7 +61,7 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({username, password})
+                    body: JSON.stringify({username, password, csrfToken})
                 })
 
                 if(!request.ok){

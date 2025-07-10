@@ -1,7 +1,7 @@
 import User from "../models/User";
 import UserRepository from "../repositories/UserRepository";
 import { HashUtil } from "../utils/HashUtil";
-import { JwtUtil } from "../utils/JwtUtil";
+import JwtUtil from "../utils/JwtUtil";
 
 export default class AuthService{
 

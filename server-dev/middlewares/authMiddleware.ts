@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import AuthUser from "../models/AuthUser";
-import { JwtUtil } from "../utils/JwtUtil";
+import JwtUtil from "../utils/JwtUtil";
 
 
 
