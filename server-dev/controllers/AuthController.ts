@@ -3,26 +3,32 @@ import AuthService from "../services/AuthService";
 import ResponseHandler from "../utils/ResponseHandler";
 import AppError from "../utils/AppError";
 import JwtUtil  from "../utils/JwtUtil";
+import Scheduler from "../utils/Scheduler";
 
 export default class AuthController{
 
     private authService:AuthService;
     private csrfTokens:Map<string, { expiresat: number }> = new Map();
     private csrfTokensTTL: number = 5;
+    private texto: string = "minha caralha";
 
     constructor(authService:AuthService){
         this.authService = authService;
 
-        setInterval(() => {
-            console.log('Executando setinterval. Quantidade de tokens na memória: ' + this.csrfTokens.size)
-            const now = Date.now();
-            for (const [token, { expiresat }] of this.csrfTokens.entries()) {
-                if (expiresat <= now) {
-                    this.csrfTokens.delete(token);
+        Scheduler.register({
+            name: 'Limpar tokens CSTF expirados',
+            intervalMs: 60 * 1000,
+            callback: async () => {
+                console.log('Executando setinterval. Quantidade de tokens na memória: ' + this.csrfTokens.size)
+                const now = Date.now();
+                for (const [token, { expiresat }] of this.csrfTokens.entries()) {
+                    if (expiresat <= now) {
+                        this.csrfTokens.delete(token);
+                    }
                 }
+                console.log('Limpeza finalizada. Quantidade de tokens na memória: ' + this.csrfTokens.size)
             }
-        }, 5 * 1000); // a cada minuto, por exemplo
-        console.log('Limpeza finalizada. Quantidade de tokens na memória: ' + this.csrfTokens.size)
+        })
     }
 
     getLoginPage = async (request: Request, response: Response, next:NextFunction): Promise<void> => {
