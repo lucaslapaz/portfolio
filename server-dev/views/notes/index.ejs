@@ -9,19 +9,15 @@
     <link rel="icon" type="image/png" href="/icons/letra-l.png">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css" /> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-dark.min.css" />
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
      
 </head>
 
 <body class="body-fullscreen">
-
-    <%- //include('../partials/header.ejs') %>
-
     <main class="main-notes-section">
         <div class="notes-wrapper">
             <section class="notes-section">
-                <div class="notes-navbar-list-items-wrapper">
+                <div class="notes-navbar__left-container">
                     <div class="notes-navbar">
                         <a class="notes-navbar__item" href="/">Home</a>
                         <a class="notes-navbar__item" href="/blog">Blog</a>
@@ -49,8 +45,9 @@
         let topBarDiv;
         let activeListItem;
         let processingItemClickEvent = false;
+        let leftContainer;
         const contentCache = new Map();
-        const listCache = new Map()
+        const listCache = new Map();
     
         /*
         <div class="list-items__file list-items__item">
@@ -65,13 +62,17 @@
                 TypeScript - Configuração.md
             </p>
         </div>
-        */
 
-        /*
             <div class="top-bar__file-name">
                 <p>Nome do arquivo.md</p>
             </div>
         */
+
+        /**
+         * Obtém uma lista de metadados dos arquivos do repositório
+         * @param path Caminho da pasta a se buscar os arquivos
+         * @returns Uma lista com metadados dos arquivos no path especificado
+         */
         async function getMetadataList(path = "/"){
             try{
                 let url = path ? "/notes/metadata-list?path=" + encodeURIComponent(path) : "/notes/metadata-list"
@@ -126,7 +127,6 @@
             }
         }
 
-
         function changeFileName(fileNameData){
             let fileNameDiv = topBarDiv.querySelector('.top-bar__file-name');
 
@@ -154,7 +154,6 @@
             nameP.textContent = fileNameData;
         }
 
-
         function setActiveListItem(listItem){
             if(activeListItem){
                 activeListItem.removeAttribute("data-active");
@@ -176,15 +175,24 @@
             });
             fileTextDiv.scrollTop = 0;
         }
-
         
         async function itemClickHandler(e){
             if(processingItemClickEvent == true){
                 return;
             }
 
-            processingItemClickEvent = true;
             const listItem = e.target.closest('.list-items__item');
+
+            /**
+            * Verificação necessária pois clicar na barra de rolagem também lança evento 
+            * e o listItem ficaria undefined.
+            **/
+            if(!listItem){
+                return;
+            }
+
+            processingItemClickEvent = true;
+
             const type = listItem.getAttribute("data-type");
             const path = listItem.getAttribute("data-path");
 
@@ -224,7 +232,6 @@
             }
             processingItemClickEvent =false;
         }
-
 
         function createAllListItems(listItems, path){
 
@@ -285,10 +292,45 @@
             return itemsContainer;
         }
 
+        let mouseIsDown = false;
+        let resizingLeftBar = false;
+        let xDifference;
+        function resizeLeftBar(e){
+            const containerRect = leftContainer.getBoundingClientRect();
+            const containerWidth = containerRect.width;
+            const containerX = containerRect.x;
+
+            let inside = (e.clientX > containerWidth + containerX && e.clientX < containerWidth + containerX + 10);
+
+            if(inside){
+                document.body.style['cursor'] = 'ew-resize';
+            }else{
+                document.body.style['cursor'] = "default"
+            }
+
+            if(mouseIsDown){
+                if(inside && resizingLeftBar == false){
+                    resizingLeftBar = true;
+                    xDifference = e.clientX - (containerWidth + containerX);
+                }
+            }else{
+                resizingLeftBar = false;
+            }
+
+            if(resizingLeftBar){
+                leftContainer.style["width"] = (e.clientX - xDifference - containerX) + "px";
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", async function(){
             listItemsContainer = document.querySelector(".notes-section__list-items");
             fileTextDiv = document.querySelector(".file-content__text");
             topBarDiv = document.querySelector(".file-content__top-bar");
+            leftContainer = document.querySelector('.notes-navbar__left-container');
+
+            window.addEventListener("mousemove", resizeLeftBar);
+            window.addEventListener("mousedown", (e) => { e.preventDefault(); mouseIsDown = true; });
+            window.addEventListener("mouseup", (e) => { mouseIsDown = false; });
 
             listItemsContainer.addEventListener("mousedown", itemClickHandler);
 
@@ -300,6 +342,9 @@
 
             const readme = document.querySelector('[data-file-name="README.md"]');
             readme.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+            readme.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+
+            showToast("error", "Falha ao obter a lista de arquivos. Recarregue a página e tente novamente.");
         })
     </script>
 </body>
