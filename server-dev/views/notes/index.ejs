@@ -94,6 +94,7 @@
                 return null;
             }catch(err){
                 console.error(err.message);
+                showToast("error", "Falha ao obter a lista de arquivos. Recarregue a página e tente novamente.");
             }
         }
 
@@ -124,6 +125,7 @@
                 return null;
             }catch(err){
                 console.log('Error: ' + err);
+                showToast("error", "Falha ao obter o conteúdo do arquivo. Recarregue a página e tente novamente.");
             }
         }
 
@@ -344,7 +346,6 @@
             readme.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
             readme.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
 
-            showToast("error", "Falha ao obter a lista de arquivos. Recarregue a página e tente novamente.");
         })
     </script>
 </body>
