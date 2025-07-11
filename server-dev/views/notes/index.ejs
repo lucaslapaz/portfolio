@@ -320,7 +320,9 @@
             }
 
             if(resizingLeftBar){
-                leftContainer.style["width"] = (e.clientX - xDifference - containerX) + "px";
+                let newWidth = (e.clientX - xDifference - containerX)
+                leftContainer.style["width"] = newWidth + "px";
+                localStorage.setItem('leftContainerWidth', newWidth);
             }
         }
 
@@ -329,6 +331,10 @@
             fileTextDiv = document.querySelector(".file-content__text");
             topBarDiv = document.querySelector(".file-content__top-bar");
             leftContainer = document.querySelector('.notes-navbar__left-container');
+
+            if(localStorage.getItem('leftContainerWidth')){
+                leftContainer.style['width'] = localStorage.getItem('leftContainerWidth') + 'px';
+            }
 
             window.addEventListener("mousemove", resizeLeftBar);
             window.addEventListener("mousedown", (e) => { e.preventDefault(); mouseIsDown = true; });

@@ -817,7 +817,8 @@ small { font-size: var(--text-sm); }
 }
 .notes-navbar__left-container{
     height: 100%;
-    width: 40rem;
+    width: 37rem;
+    max-width: 50rem;
     display: flex;
     flex-direction: column;
 }
