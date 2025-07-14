@@ -7,32 +7,38 @@
     <title>Login</title>
     <link rel="stylesheet" href="/assets/style.css">
     <link rel="icon" type="image/png" href="/icons/letra-l.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-
-    <%- include('../partials/header.ejs') %>
-
-    <main class="main">
-        <div class="main-wrapper wrapper">
-            <section class="login-section">
-                <h1 class="login-section__title">LOGIN</h1>
-                <input type="input" class="login-section__username">
-                <input type="password" class="login-section__password">
+    <div class="wrapper">
+        <%- include('../partials/header.ejs') %>
+        <main class="main">
+            <section class="login">
+                <h1 class="login__title">LOGIN</h1>
+                <input type="input" class="login__username">
+                <input type="password" class="login__password">
                 <input type="hidden" id="csrf_token" value="<%- csrfToken %>">
-                <button type="button" class="login-section__submit">Entrar</button>
+                <button type="button" class="login__submit">Entrar</button>
             </section>
-        </div>
-    </main>
-
-    <%- include('../partials/footer.ejs') %>
+        </main>
+        <%- include('../partials/footer.ejs') %>
+    </div>
 
     <script src="/assets/script.js"></script>
     <script>
-        const usernameInput = document.querySelector(".login-section__username");
-        const passwordInput = document.querySelector(".login-section__password");
+        const usernameInput = document.querySelector(".login__username");
+        const passwordInput = document.querySelector(".login__password");
         const csrfTokenInput = document.getElementById("csrf_token");
-        const submitButton = document.querySelector(".login-section__submit");
+        const submitButton = document.querySelector(".login__submit");
 
         submitButton.addEventListener("click", async (e) => {
 

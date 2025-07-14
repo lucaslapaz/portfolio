@@ -10,24 +10,20 @@
 </head>
 
 <body>
-
-    <%- include('../partials/header.ejs') %>
-
+    <div class="wrapper">
+        <%- include('../partials/header.ejs') %>
         <main class="main">
-            <div class="main-wrapper">
-                <section class="notfound-section">
-                    <h1 class="notfound-section__title">401 - Não autorizado</h1>
-                    <p class="notfound-section__p">
-                        Ops! Parece que você tentou acessar uma página que requer autenticação.<br>
-                        Faça login para continuar ou volte para a <a href="/">página inicial</a>.
-                    </p>
-                </section>
-            </div>
+            <section class="error">
+                <h1 class="error__title">401 - Não autorizado</h1>
+                <p class="error__p">
+                    Ops! Parece que você tentou acessar uma página que requer autenticação.<br>
+                    Faça login para continuar ou volte para a <a class="error__link" href="/">página inicial</a>.
+                </p>
+            </section>
         </main>
-
         <%- include('../partials/footer.ejs') %>
-
-        <script src="/assets/script.js"></script>
+    </div>
+    <script src="/assets/script.js"></script>
 </body>
 
 </html>

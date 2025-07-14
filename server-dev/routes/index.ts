@@ -22,6 +22,8 @@ export default function createRoutes(
     router.get("/", homeController.getHomePage);
 
     router.get("/home", homeController.getHomePage);
+    
+    router.get("/home-old", homeController.getOldHomePage);
 
     router.get("/login", authController.getLoginPage);
 

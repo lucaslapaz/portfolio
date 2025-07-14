@@ -7,27 +7,32 @@
     <title>404 - Ops!</title>
     <link rel="stylesheet" href="/assets/style.css">
     <link rel="icon" type="image/png" href="/icons/letra-l.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-
-    <%- include('../partials/header.ejs') %>
-
+    <div class="wrapper">
+        <%- include('../partials/header.ejs') %>
         <main class="main">
-            <div class="main-wrapper">
-                <section class="notfound-section">
-                    <h1 class="notfound-section__title">404 - Página não encontrada</h1>
-                    <p class="notfound-section__p">
-                        Ops! Parece que você tentou acessar uma página que não existe ou foi movida.<br>
-                        Verifique o endereço digitado ou volte para a <a href="/">página inicial</a>.
-                    </p>
-                </section>
-            </div>
+            <section class="error">
+                <h1 class="error__title">404 - Página não encontrada</h1>
+                <p class="error__p">
+                    Ops! Parece que você tentou acessar uma página que não existe ou foi movida.<br>
+                    Verifique o endereço digitado ou volte para a <a class="error__link" href="/">página inicial</a>.
+                </p>
+            </section>
         </main>
-
         <%- include('../partials/footer.ejs') %>
-
-            <script src="/assets/script.js"></script>
+    </div>
+    <script src="/assets/script.js"></script>
 </body>
 
 </html>

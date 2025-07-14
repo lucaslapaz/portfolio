@@ -43,7 +43,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(rateLimit({
     windowMs: 1 * 60 * 1000,
     limit: 5 * 20,
-    message: "Too many requests, please try again later."
+    message: { success: false, data: { message: "Muitas requisições, tente novamente daqui a pouco."}}
 }));
 
 // Usado para fazer o parser do cookie recebido na requisição. Acessível em request.cookies

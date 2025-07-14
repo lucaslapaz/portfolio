@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Notes</title>
-    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/assets/style-old.css">
     <link rel="icon" type="image/png" href="/icons/letra-l.png">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css" /> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-dark.min.css" />
@@ -91,6 +91,7 @@
                     }
                     return listItems;
                 }
+                showToast("error", "O servidor retornou erro ao obter a lista de arquivos.");
                 return null;
             }catch(err){
                 console.error(err.message);
@@ -115,12 +116,25 @@
                 let url = "/notes/file-content?path=" + encodeURIComponent(path);
 
                 const request = await fetch(url);
+                let payload;
+                let data;
+                try{
+                    payload = await request.json();
+                    data = payload.data;
+                }catch(err){
+                    payload = null;
+                    data = null;
+                    console.log('Erro ao fazer o parser JSON da resposta do servidor.')
+                }
                 if(request.ok){
-                    const payload = await request.json();
-                    const data = payload.data;
                     content = data.content;
                     contentCache.set(path, content);
                     return content;
+                }
+                if(data){
+                    showToast("error", data.message);
+                }else{
+                    showToast("error", "O servidor retornou erro ao obter o conteúdo do arquivo.");
                 }
                 return null;
             }catch(err){
@@ -166,16 +180,20 @@
 
         async function loadFileContent(path){
             let content = await getFileMetadata(path);
-            let formatted = marked.parse(content);
-            fileTextDiv.innerHTML = formatted;
-
-            renderMathInElement(fileTextDiv, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-            fileTextDiv.scrollTop = 0;
+            if(content){
+                let formatted = marked.parse(content);
+                fileTextDiv.innerHTML = formatted;
+                
+                renderMathInElement(fileTextDiv, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ]
+                });
+                fileTextDiv.scrollTop = 0;
+                return true;
+            }
+            return false;
         }
         
         async function itemClickHandler(e){
@@ -200,9 +218,11 @@
 
             if(type == "file"){
                 let fileNameData = listItem.getAttribute("data-file-name");
-                await loadFileContent(path);
-                changeFileName(fileNameData);
-                setActiveListItem(listItem);
+                let loaded = await loadFileContent(path);
+                if(loaded){
+                    changeFileName(fileNameData);
+                    setActiveListItem(listItem);
+                }
             }
             else if(type=="dir"){
                 const status = listItem.getAttribute("data-status");
@@ -320,6 +340,7 @@
             }
 
             if(resizingLeftBar){
+                window.getSelection().removeAllRanges();
                 let newWidth = (e.clientX - xDifference - containerX)
                 leftContainer.style["width"] = newWidth + "px";
                 localStorage.setItem('leftContainerWidth', newWidth);
@@ -337,7 +358,7 @@
             }
 
             window.addEventListener("mousemove", resizeLeftBar);
-            window.addEventListener("mousedown", (e) => { e.preventDefault(); mouseIsDown = true; });
+            window.addEventListener("mousedown", (e) => { mouseIsDown = true; });
             window.addEventListener("mouseup", (e) => { mouseIsDown = false; });
 
             listItemsContainer.addEventListener("mousedown", itemClickHandler);
