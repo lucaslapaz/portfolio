@@ -71,7 +71,7 @@ jobs:
             mysql -u "${{ secrets.MYSQL_USER }}" -p"${{ secrets.MYSQL_PASSWORD }}" < ./schemas/create_stage_db.sql
 
             # Instalar dependências para produção
-            npm install --production
+            npm install --omit=dev
 
             npx knex migrate:latest
 
