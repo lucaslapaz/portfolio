@@ -61,7 +61,7 @@
             try{
                 e.target.disabled = true;
 
-                let request = await fetch("/login", {
+                let request = await fetch("/api/login", {
                     method: 'POST',
                     credentials:"include",
                     headers: {

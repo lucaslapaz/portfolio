@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import PostService from "../services/PostService";
-import AppError from "../utils/AppError";
+import PostService from "../../services/PostService";
+import AppError from "../../utils/AppError";
 
 
-export default class HomeController {
+export class HomeViewController {
 
     // private postService:PostService;
 

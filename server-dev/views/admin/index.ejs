@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Logs</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #2c3e50;
+            color: white;
+            padding-top: 30px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 22px;
+        }
+
+        .sidebar a {
+            color: white;
+            padding: 15px 25px;
+            text-decoration: none;
+            transition: background 0.3s;
+            font-size: 16px;
+        }
+
+        .sidebar a:hover {
+            background-color: #34495e;
+        }
+
+        .content {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: normal;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .level-info {
+            color: #2980b9;
+            font-weight: bold;
+        }
+
+        .level-error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .level-warn {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .geo-details {
+            font-size: 13px;
+            background: #eef1f4;
+            padding: 8px;
+            border-radius: 4px;
+            line-height: 1.4;
+        }
+
+        .geo-details span {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        em {
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>Admin</h2>
+        <a href="/admin/posts">Posts</a>
+        <a href="/admin/users">Usuários</a>
+        <a href="/admin/logs">Logs</a>
+        <a href="/admin/settings">Configurações</a>
+    </div>
+
+    <div class="content">
+        <h1>Logs do Sistema</h1>
+
+        <div style="overflow-x: auto; width: 100%;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Nível</th>
+                        <th>Método</th>
+                        <th>Status</th>
+                        <th>URL</th>
+                        <th>Duração (ms)</th>
+                        <th>IP</th>
+                        <th>User-Agent</th>
+                        <th>Tipo</th>
+                        <th>Geo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(let log of allLogs) { %>
+                        <tr>
+                            <td>
+                                <%= new Date(log.timestamp).toLocaleString() %>
+                            </td>
+                            <td class="level-<%= log.level %>">
+                                <%= log.level %>
+                            </td>
+                            <td>
+                                <%= log.message.method %>
+                            </td>
+                            <td>
+                                <%= log.message.status %>
+                            </td>
+                            <td style="word-break: break-all;">
+                                <%= log.message.url %>
+                            </td>
+                            <td>
+                                <%= log.message.duration %>
+                            </td>
+                            <td>
+                                <%= log.message.ip %>
+                            </td>
+                            <td style="word-break: break-word;">
+                                <%= log.message.userAgent %>
+                            </td>
+                            <td>
+                                <%= log.message.type %>
+                            </td>
+                            <td>
+                                <% if (log.message.geo) { %>
+                                    <div class="geo-details">
+                                        <span>País: <strong>
+                                                <%= log.message.geo.country %>
+                                            </strong></span>
+                                        <span>Cidade: <strong>
+                                                <%= log.message.geo.city || "N/A" %>
+                                            </strong></span>
+                                        <span>Região: <strong>
+                                                <%= log.message.geo.region || "N/A" %>
+                                            </strong></span>
+                                        <span>Latitude: <strong>
+                                                <%= log.message.geo.ll[0] %>
+                                            </strong></span>
+                                        <span>Longitude: <strong>
+                                                <%= log.message.geo.ll[1] %>
+                                            </strong></span>
+                                        <span>Fuso horário: <strong>
+                                                <%= log.message.geo.timezone %>
+                                            </strong></span>
+                                    </div>
+                                    <% } else { %>
+                                        <em>Sem dados</em>
+                                        <% } %>
+                            </td>
+                        </tr>
+                        <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,57 +1,36 @@
-import { ErrorRequestHandler, RequestHandler, Router } from "express";
-import PostController from "../controllers/PostController";
-import HomeController from "../controllers/HomeController";
-import BlogController from "../controllers/BlogController";
-import ErrorController from "../controllers/ErrorController";
-import AuthController from "../controllers/AuthController";
-import StatusController from "../controllers/StatusController";
-import NotesController from "../controllers/NotesController";
+import {  Router } from "express";
+import { postRoute } from "./postRoute";
+import { homeRoute } from "./homeRoute";
+import { loginRoute } from "./loginRoute";
+import { blogRoute } from "./blogRoute";
+import { statusRoute } from "./statusRoute";
+import { notesRoute } from "./notesRoute";
+import { errorRoute } from "./errorRoute";
+import { adminRoute } from "./adminRoute";
 
-export default function createRoutes(
-    checkPermissionMiddleware: Function,
-    postController: PostController,
-    homeController: HomeController,
-    blogController: BlogController,
-    errorController: ErrorController,
-    authController: AuthController,
-    statusController: StatusController,
-    notesController:NotesController
-) {
-    const router = Router();
+export const routes = Router();
 
-    router.get("/", homeController.getHomePage);
+// Home
+routes.use(homeRoute);
 
-    router.get("/home", homeController.getHomePage);
-    
-    router.get("/home-old", homeController.getOldHomePage);
+// Posts
+routes.use(postRoute);
 
-    router.get("/login", authController.getLoginPage);
+// Login
+routes.use(loginRoute);
 
-    router.post("/login", authController.postLogin);
-    
-    router.get("/logout", authController.getLogoutPage);
+// Blog
+routes.use(blogRoute);
 
-    router.get("/blog", blogController.getBlogPage);
+// Server status
+routes.use(statusRoute);
 
-    router.post("/post", checkPermissionMiddleware(10), postController.postCreatePost);
-    
-    router.get("/post/new", checkPermissionMiddleware(10), postController.getCreatePostPage);
+// Notes
+routes.use(notesRoute);
 
-    router.get("/post/:postId", postController.getPostByIdPage);
+// Error
+routes.use(errorRoute);
 
-    router.get("/post/:postId/edit", checkPermissionMiddleware(10), postController.getEditPostByIdPage);
+// Admin
+routes.use(adminRoute);
 
-    router.patch("/post/:postId", postController.patchPostById);
-
-    router.get("/status", statusController.getServerStatus);
-
-    router.get("/notes", notesController.getNotesPage);
-
-    router.get("/notes/metadata-list", notesController.getMetadaList);
-
-    router.get("/notes/file-content", notesController.getFileContent);
-
-    router.get("/unauthorized", errorController.getUnauthorizedPage);
-
-    return router;
-}

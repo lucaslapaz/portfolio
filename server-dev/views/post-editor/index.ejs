@@ -67,7 +67,7 @@
                     return;
                 }
 
-                const request = await fetch("/post/" + postId, {
+                const request = await fetch("/api/post/" + postId, {
                     method: "PATCH",
                     body: JSON.stringify({title, description, content}),
                     credentials: "include",

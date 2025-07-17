@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import BlogService from "../services/BlogService";
-import AppError from "../utils/AppError";
-// import PostService from "../services/PostService";
+import BlogService from "../../services/BlogService";
+import AppError from "../../utils/AppError";
+// import PostService from "../../services/PostService";
 
 
-export default class BlogController{
+export class BlogViewController{
     
     private blogService:BlogService;
 

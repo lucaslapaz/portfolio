@@ -1,16 +1,15 @@
 import { NextFunction, request, Request, Response } from "express";
-import AuthService from "../services/AuthService";
-import ResponseHandler from "../utils/ResponseHandler";
-import AppError from "../utils/AppError";
-import JwtUtil  from "../utils/JwtUtil";
-import Scheduler from "../utils/Scheduler";
+import AuthService from "../../services/AuthService";
+import ResponseHandler from "../../utils/ResponseHandler";
+import JwtUtil  from "../../utils/JwtUtil";
+import Scheduler from "../../utils/Scheduler";
 
-export default class AuthController{
+export const csrfTokens:Map<string, { expiresat: number }> = new Map();
+export const csrfTokensTTL: number = 5;
+
+export class AuthApiController{
 
     private authService:AuthService;
-    private csrfTokens:Map<string, { expiresat: number }> = new Map();
-    private csrfTokensTTL: number = 5;
-    private texto: string = "minha caralha";
 
     constructor(authService:AuthService){
         this.authService = authService;
@@ -19,32 +18,16 @@ export default class AuthController{
             name: 'Limpar tokens CSTF expirados',
             intervalMs: 60 * 1000,
             callback: async () => {
-                console.log('Executando setinterval. Quantidade de tokens na memória: ' + this.csrfTokens.size)
+                //console.log('Executando setinterval. Quantidade de tokens na memória: ' + csrfTokens.size)
                 const now = Date.now();
-                for (const [token, { expiresat }] of this.csrfTokens.entries()) {
+                for (const [token, { expiresat }] of csrfTokens.entries()) {
                     if (expiresat <= now) {
-                        this.csrfTokens.delete(token);
+                        csrfTokens.delete(token);
                     }
                 }
-                console.log('Limpeza finalizada. Quantidade de tokens na memória: ' + this.csrfTokens.size)
+                //console.log('Limpeza finalizada. Quantidade de tokens na memória: ' + csrfTokens.size)
             }
         })
-    }
-
-    getLoginPage = async (request: Request, response: Response, next:NextFunction): Promise<void> => {
-        try{
-            const expiresat = Date.now() + (this.csrfTokensTTL * 60 * 1000);
-            const csrfToken = JwtUtil.generateToken({ expiresAt: expiresat });
-            this.csrfTokens.set(csrfToken, { expiresat });
-
-            response.setHeader("Content-Type", "text/html");
-            response.status(200);
-            response.render("login", {csrfToken});
-        }catch(err:any){
-            let message:string = "ERROR(getLoginPage): Falha ao obter a página de login: " + err.message;
-            next(new AppError(message, 500));
-        }
-        return;
     }
 
     postLogin = async (request: Request, response: Response) : Promise<void> => {
@@ -57,12 +40,11 @@ export default class AuthController{
 
             if(csrfToken == null){
                 let msg: string = "A requisição foi enviada de um local não permitido.";
-                console.log(msg);
                 ResponseHandler.error(response, msg);
                 return;
             }
 
-            if(!this.csrfTokens.has(csrfToken)){
+            if(!csrfTokens.has(csrfToken)){
                 let msg: string = "Token CSRF incorreto ou expirado!";
                 console.log(msg)
                 ResponseHandler.error(response, msg);
@@ -82,7 +64,7 @@ export default class AuthController{
                 return;
             }
 
-            this.csrfTokens.delete(csrfToken);
+            csrfTokens.delete(csrfToken);
 
             const timestamp = Date.now();
             if(timestamp >= expiresat){
@@ -110,23 +92,6 @@ export default class AuthController{
         }catch(err:any){
             console.error("Erro no postLogin: " + err.message);
             ResponseHandler.error(response, "Falha interna do servidor.");
-        }
-        return;
-    }
-
-    getLogoutPage = async (request: Request, response: Response, next: NextFunction) : Promise<void> => {
-        try{
-            //console.log('chegou');
-            response.cookie("auth_token", "", {
-                maxAge: -1000,
-                httpOnly: true, // Não acessível por javascript -> proteção contra XSS
-                sameSite: 'lax',
-                secure: false
-            })
-            response.redirect("/");
-        }catch(err: any){
-            let message:string = "ERROR(getLogouPage): Falha ao obter a página de logout: " + err.message;
-            next(new AppError(message, 500));
         }
         return;
     }

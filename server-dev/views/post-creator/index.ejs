@@ -69,7 +69,7 @@
                     return;
                 }
 
-                const request = await fetch("/post", {
+                const request = await fetch("/api/post", {
                     method: "POST",
                     body: JSON.stringify({title, description, content}),
                     credentials: "include",

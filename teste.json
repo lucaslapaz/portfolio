@@ -1,0 +1,31 @@
+{
+    "level": "info",
+    "message": {
+        "duration": 5,
+        "geo": {
+            "area": 200,
+            "city": "",
+            "country": "RO",
+            "eu": "1",
+            "ll": [
+                45.9968,
+                24.997
+            ],
+            "metro": 0,
+            "range": [
+                1424961792,
+                1424962047
+            ],
+            "region": "",
+            "timezone": "Europe/Bucharest"
+        },
+        "ip": "::ffff:84.239.49.188",
+        "method": "GET",
+        "status": 200,
+        "timestamp": "2025-07-17T02:15:46.827Z",
+        "type": "access",
+        "url": "/",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    "timestamp": "2025-07-17T02:15:46.828Z"
+}

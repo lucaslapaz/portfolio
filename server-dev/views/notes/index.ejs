@@ -75,7 +75,7 @@
          */
         async function getMetadataList(path = "/"){
             try{
-                let url = path ? "/notes/metadata-list?path=" + encodeURIComponent(path) : "/notes/metadata-list"
+                let url = path ? "/api/notes/metadata-list?path=" + encodeURIComponent(path) : "/notes/metadata-list"
 
                 const request = await fetch(url);
                 if(request.ok){
@@ -113,7 +113,7 @@
                     return content;
                 }
 
-                let url = "/notes/file-content?path=" + encodeURIComponent(path);
+                let url = "/api/notes/file-content?path=" + encodeURIComponent(path);
 
                 const request = await fetch(url);
                 let payload;

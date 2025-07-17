@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 
-export default class ErrorController{
+export class ErrorViewController{
 
     getNotFoundPage = async (request:Request, response:Response) : Promise<void> => {
         response.setHeader("Content-Type", "text/html");

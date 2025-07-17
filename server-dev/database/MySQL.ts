@@ -1,5 +1,6 @@
 import { Pool } from "mysql2/promise";
 import mysql from "mysql2/promise"
+import dotenv from 'dotenv';
 
 export default class MySQL{
     private static instance:MySQL;
@@ -9,6 +10,7 @@ export default class MySQL{
      * Cria o Pool MySQL
      */
     constructor(){
+        dotenv.config();
         this.pool = mysql.createPool({
             host: process.env.MYSQ_HOST,
             port: parseInt(process.env.MYSQL_PORT as string),

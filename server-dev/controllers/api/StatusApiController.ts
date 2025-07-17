@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import ResponseHandler from "../utils/ResponseHandler"
-import StatusService from "../services/StatusService";
+import ResponseHandler from "../../utils/ResponseHandler"
+import StatusService from "../../services/StatusService";
 
-export default class StatusController{
+export class StatusApiController{
 
     private statusService:StatusService;
         
