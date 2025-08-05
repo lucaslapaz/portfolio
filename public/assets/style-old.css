@@ -821,6 +821,8 @@ small { font-size: var(--text-sm); }
     max-width: 50rem;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
+    flex-shrink: 0;
 }
 
 .notes-section__list-items{
@@ -863,6 +865,7 @@ small { font-size: var(--text-sm); }
 .list-items__item[data-active="true"]{
     background-color: var(--file-active-name);
 }
+
 
 .item-icon{
     width: 2.2rem;
@@ -915,27 +918,101 @@ small { font-size: var(--text-sm); }
     flex-direction: column;
     background-color: #242424;
     flex-grow: 1;
+    flex-shrink: 1;
     height: 100%;
     overflow: hidden;
 }
 
+.toggle-left-menu{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-content: center;
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+}
+
+
+.left-container-open,
+.left-container-closed,
+.toggle-left-menu{
+    display: none;
+    color: white;
+}
+
+.toggle-left-menu svg{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 950px){
+    #toggle-left-container:checked ~ .notes-navbar__left-container{
+        position: absolute;
+        max-width: none;
+        top: 0;
+        left: 0;
+        width: 100%;
+        max-width: 500px;
+        z-index: 999;
+    }
+
+    .toggle-left-menu{
+        display: grid;
+    }
+
+    #toggle-left-container:checked ~ div .left-container-open{
+        display: block;
+    }
+
+    #toggle-left-container:not(:checked) ~ div .left-container-closed{
+        display: block;
+    }
+
+    #toggle-left-container:not(:checked) ~ .notes-navbar__left-container{
+        flex-shrink: 0;
+        width: fit-content;
+    }
+    #toggle-left-container:not(:checked) ~ div .notes-section__list-items *{
+        display: none;
+    }
+
+    #toggle-left-container:not(:checked) ~ div .notes-navbar__list{
+        display: none;
+    }
+
+    #toggle-left-container:checked ~ div nav .toggle-left-menu{
+        width: fit-content;
+    }
+}
+
+
 .notes-navbar{
+    display: flex;
+    height: 5rem;
+    background-color: var(--nav-bar-bg-dark);
+    flex-shrink: 0;
+}
+
+.notes-navbar__list{
+    list-style: none;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    height: 5rem;
-    background-color: var(--nav-bar-bg-dark);
     padding-left: 2rem;
     flex-shrink: 0;
 }
 
 .notes-navbar__item{
-    color: white;
     padding: 5px 10px;
     border-radius: 1rem;
     font-weight: 500;
     white-space: nowrap;
+}
+
+.notes-navbar__item a{
+    color: white;
 }
 
 .notes-navbar__item:hover{

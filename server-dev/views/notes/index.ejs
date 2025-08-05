@@ -10,20 +10,39 @@
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css" /> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-dark.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-     
 </head>
 
 <body class="body-fullscreen">
     <main class="main-notes-section">
         <div class="notes-wrapper">
             <section class="notes-section">
+                <input type="checkbox" id="toggle-left-container" style="display:none;">
+
                 <div class="notes-navbar__left-container">
-                    <div class="notes-navbar">
-                        <a class="notes-navbar__item" href="/">Home</a>
-                        <a class="notes-navbar__item" href="/blog">Blog</a>
-                        <a class="notes-navbar__item" href="https://github.com/lucaslapaz/portfolio">This Repository</a>
-                        <a class="notes-navbar__item" href="/login">Login</a>
-                    </div>
+
+                    <nav class="notes-navbar">
+
+                        <div class="toggle-left-menu">
+                            <label for="toggle-left-container" class="left-container-open">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="white" d="M5 6.4L6.4 5 19 17.6 17.6 19 5 6.4Z"/>
+                                    <path fill="white" d="M5 17.6L6.4 19 19 6.4 17.6 5 5 17.6Z"/>
+                                </svg>
+                            </label>
+                            <label for="toggle-left-container" class="left-container-closed">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 6h18v2H3V6zM3 11h18v2H3v-2zM3 16h18v2H3v-2z"/>
+                                </svg>
+                            </label>
+                        </div> 
+
+                        <ol class="notes-navbar__list">
+                            <li class="notes-navbar__item"><a href="/">Home</a></li>
+                            <li class="notes-navbar__item"><a href="/blog">Blog</a></li>
+                            <li class="notes-navbar__item"><a href="https://github.com/lucaslapaz/portfolio">Repository</a></li>
+                            <li class="notes-navbar__item"><a href="/login">Login</a></li>
+                        </ol>
+                    </nav>
                     <div class="notes-section__list-items"></div>
                 </div>
                 <div class="notes-section__file-container">
@@ -354,7 +373,7 @@
             leftContainer = document.querySelector('.notes-navbar__left-container');
 
             if(localStorage.getItem('leftContainerWidth')){
-                leftContainer.style['width'] = localStorage.getItem('leftContainerWidth') + 'px';
+                //leftContainer.style['width'] = localStorage.getItem('leftContainerWidth') + 'px';
             }
 
             window.addEventListener("mousemove", resizeLeftBar);
